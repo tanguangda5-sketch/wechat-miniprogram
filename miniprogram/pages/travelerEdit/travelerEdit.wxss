@@ -1,0 +1,44 @@
+﻿.page{
+  padding: 24rpx;
+  background: #f6faf4;
+  min-height: 100vh;
+}
+
+.card{
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+}
+
+.row{
+  display:flex;
+  align-items:center;
+  margin: 18rpx 0;
+}
+
+.label{
+  width: 170rpx;
+  color: #233123;
+}
+
+.input{
+  flex: 1;
+  border: 1rpx solid #dbe8d7;
+  border-radius: 12rpx;
+  padding: 16rpx;
+}
+
+.picker{
+  flex: 1;
+  border: 1rpx solid #dbe8d7;
+  border-radius: 12rpx;
+  padding: 16rpx;
+  color: #233123;
+}
+
+.saveBtn{
+  margin-top: 28rpx;
+  background: #57984a;
+  color: #ffffff;
+  border-radius: 999rpx;
+}

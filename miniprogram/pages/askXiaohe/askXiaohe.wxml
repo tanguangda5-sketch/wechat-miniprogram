@@ -1,0 +1,15 @@
+<view class="page">
+  <view class="topbar">
+    <view class="backBtn" bindtap="goBack">返</view>
+    <view class="titleWrap">
+      <view class="title">{{text.title}}</view>
+      <view class="subtitle">{{text.subtitle}}</view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="cardTitle">问小禾页面下一步继续完善</view>
+    <view class="cardDesc">这里会接入历史对话、小禾技能、试试这样问，以及语音转文字入口。</view>
+    <view class="cardAction" bindtap="goChat">先看对话页结构</view>
+  </view>
+</view>

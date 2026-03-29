@@ -1,0 +1,23 @@
+<view class="page">
+
+  <view class="card">
+    <view class="title">请填写评价</view>
+
+    <view class="label">评分</view>
+    <view class="stars">
+      <text wx:for="{{[1,2,3,4,5]}}" wx:key="*this"
+            class="star {{score>=item?'on':''}}"
+            data-score="{{item}}"
+            bindtap="setScore">★</text>
+    </view>
+
+    <view class="label">评价内容</view>
+    <textarea class="textarea"
+              placeholder="请输入评价内容"
+              value="{{content}}"
+              bindinput="onInput" />
+  </view>
+
+  <button class="submit" bindtap="submitReview">提交评价</button>
+
+</view>

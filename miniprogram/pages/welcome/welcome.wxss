@@ -1,0 +1,164 @@
+﻿.page {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #182218;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(255, 205, 96, 0.18), transparent 24%),
+    radial-gradient(circle at 78% 18%, rgba(91, 156, 104, 0.22), transparent 22%),
+    linear-gradient(135deg, #173426 0%, #224b37 35%, #2a5a45 100%);
+}
+
+.mapGrid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1rpx, transparent 1rpx),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1rpx, transparent 1rpx);
+  background-size: 72rpx 72rpx;
+  opacity: 0.45;
+}
+
+.route {
+  position: absolute;
+  border: 6rpx solid rgba(244, 232, 196, 0.5);
+  border-radius: 999rpx;
+}
+
+.routeA {
+  width: 540rpx;
+  height: 540rpx;
+  top: -60rpx;
+  left: -100rpx;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  transform: rotate(18deg);
+}
+
+.routeB {
+  width: 620rpx;
+  height: 620rpx;
+  right: -180rpx;
+  bottom: -120rpx;
+  border-left-color: transparent;
+  border-top-color: transparent;
+  transform: rotate(-12deg);
+}
+
+.marker {
+  position: absolute;
+  width: 22rpx;
+  height: 22rpx;
+  border-radius: 50%;
+  background: #6fb574;
+  box-shadow: 0 0 0 12rpx rgba(111, 181, 116, 0.18);
+}
+
+.markerA {
+  top: 200rpx;
+  left: 118rpx;
+}
+
+.markerB {
+  top: 520rpx;
+  right: 130rpx;
+}
+
+.markerC {
+  bottom: 250rpx;
+  left: 160rpx;
+}
+
+.mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 12, 10, 0.5);
+  backdrop-filter: blur(10rpx);
+}
+
+.sheetWrap {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48rpx;
+  box-sizing: border-box;
+}
+
+.sheet {
+  width: 100%;
+  max-width: 640rpx;
+  padding: 34rpx 34rpx 28rpx;
+  border-radius: 36rpx;
+  background: rgba(255, 252, 244, 0.98);
+  box-shadow: 0 32rpx 80rpx rgba(0, 0, 0, 0.26);
+}
+
+.brand {
+  font-size: 26rpx;
+  font-weight: 600;
+  letter-spacing: 6rpx;
+  color: #8a6b39;
+  text-align: center;
+}
+
+.title {
+  margin-top: 18rpx;
+  font-size: 42rpx;
+  line-height: 1.28;
+  font-weight: 700;
+  color: #182218;
+  text-align: center;
+}
+
+.content {
+  margin-top: 24rpx;
+}
+
+.paragraph {
+  display: block;
+  margin-bottom: 18rpx;
+  font-size: 29rpx;
+  line-height: 1.72;
+  color: #426046;
+}
+
+.strong {
+  color: #1f2b1d;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  gap: 22rpx;
+  margin-top: 18rpx;
+}
+
+.btnGhost,
+.btnPrimary {
+  flex: 1;
+  height: 84rpx;
+  line-height: 84rpx;
+  border-radius: 999rpx;
+  border: none;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.btnGhost {
+  background: #eef1f3;
+  color: #426046;
+}
+
+.btnPrimary {
+  background: linear-gradient(135deg, #57984a 0%, #57984a 100%);
+  color: #ffffff;
+  box-shadow: 0 14rpx 28rpx rgba(87, 152, 74, 0.24);
+}

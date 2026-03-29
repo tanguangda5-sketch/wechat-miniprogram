@@ -1,0 +1,157 @@
+﻿.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: linear-gradient(180deg, #f8f1e6 0%, #f4f8ee 100%);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28rpx 32rpx;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #253729;
+}
+
+.skip {
+  color: #57984a;
+  font-size: 26rpx;
+}
+
+.content {
+  flex: 1;
+  padding: 32rpx;
+  box-sizing: border-box;
+}
+
+.section {
+  margin-bottom: 24rpx;
+  padding: 28rpx 24rpx;
+  border-radius: 24rpx;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 10rpx 24rpx rgba(59, 84, 63, 0.06);
+}
+
+.sectionLabel {
+  margin-bottom: 18rpx;
+  font-size: 28rpx;
+  color: #50604f;
+}
+
+.avatarBox {
+  position: relative;
+  width: 170rpx;
+  height: 170rpx;
+  border-radius: 24rpx;
+  overflow: hidden;
+  background: #edf5ea;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+}
+
+.avatarHint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 10rpx 12rpx;
+  font-size: 22rpx;
+  color: #ffffff;
+  background: rgba(37, 55, 41, 0.72);
+}
+
+.input,
+.pickerView {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 84rpx;
+  padding: 0 20rpx;
+  border-radius: 18rpx;
+  background: #f7f8f3;
+  border: 1rpx solid #dfe7d8;
+  color: #263029;
+  font-size: 28rpx;
+}
+
+.input {
+  height: 84rpx;
+}
+
+.pickerView {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.placeholder {
+  color: #9aa593;
+}
+
+.inputHint,
+.birthUnknown {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: #879283;
+}
+
+.inputHint {
+  text-align: right;
+}
+
+.birthToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+  font-size: 26rpx;
+  color: #526050;
+}
+
+.birthDateRow {
+  display: flex;
+  align-items: center;
+}
+
+.picker {
+  flex: 1;
+}
+
+.pickerSmall {
+  min-width: 0;
+}
+
+.separator {
+  padding: 0 10rpx;
+  color: #97a292;
+}
+
+.arrow {
+  color: #8a9887;
+}
+
+.footer {
+  padding: 24rpx 32rpx 40rpx;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.btnSave {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  border-radius: 999rpx;
+  border: none;
+  background: #57984a;
+  color: #ffffff;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+

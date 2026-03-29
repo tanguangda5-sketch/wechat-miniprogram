@@ -1,0 +1,47 @@
+<view class="page">
+  <view class="header">
+    <view>
+      <view class="title">{{text.setupTitle}}</view>
+      <view class="desc">{{text.desc}}</view>
+    </view>
+    <view class="skip" bindtap="onSkip" wx:if="{{mode !== 'edit'}}">{{text.skip}}</view>
+  </view>
+
+  <scroll-view scroll-y class="content">
+    <view class="section">
+      <view class="sectionTitle">{{text.travelModesTitle}}</view>
+      <view class="tagList">
+        <view
+          wx:for="{{travelModes}}"
+          wx:key="*this"
+          class="tag {{selectedModeMap[item] ? 'active' : ''}}"
+          data-tag="{{item}}"
+          bindtap="toggleModeTag"
+        >
+          {{item}}
+        </view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="sectionTitle">{{text.travelStylesTitle}}</view>
+      <view class="tagList">
+        <view
+          wx:for="{{travelStyles}}"
+          wx:key="*this"
+          class="tag {{selectedStyleMap[item] ? 'active' : ''}}"
+          data-tag="{{item}}"
+          bindtap="toggleStyleTag"
+        >
+          {{item}}
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="footer">
+    <button class="btnSave" bindtap="onSave" loading="{{loading}}" disabled="{{loading}}">
+      {{text.saveAndEnterHome}}
+    </button>
+  </view>
+</view>

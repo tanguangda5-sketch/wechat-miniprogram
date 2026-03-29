@@ -1,0 +1,213 @@
+<view class="page mode-{{mode}}">
+  <view class="customNav" style="padding-top: {{statusBarHeight}}px;">
+    <view class="topbar">
+      <view class="backBtn" bindtap="goBack">
+        <view class="backArrow"></view>
+      </view>
+      <view class="modeTabs">
+        <view class="modeTab {{mode==='search' ? 'active' : ''}}" data-mode="search" bindtap="switchMode">
+          {{text.searchMode}}
+        </view>
+        <view class="modeTab {{mode==='ask' ? 'active' : ''}}" data-mode="ask" bindtap="switchMode">
+          {{text.askMode}}
+        </view>
+      </view>
+      <view class="modeBadge">{{text.modeBadge}}</view>
+    </view>
+  </view>
+
+  <view class="content">
+    <block wx:if="{{mode==='search'}}">
+      <view class="searchPanel">
+        <view class="searchInputWrap">
+          <input
+            class="searchInput"
+            value="{{keyword}}"
+            placeholder="{{currentHint}}"
+            placeholder-class="searchPlaceholder"
+            confirm-type="search"
+            bindfocus="onSearchFocus"
+            bindblur="onSearchBlur"
+            bindinput="onKeywordInput"
+            bindconfirm="executeSearch"
+          />
+          <view class="voiceIconBtn" bindtap="onVoiceSearch">
+            <view class="micStem"></view>
+            <view class="micBase"></view>
+          </view>
+          <view class="searchBtn" bindtap="executeSearch">{{text.searchMode}}</view>
+        </view>
+      </view>
+
+      <block wx:if="{{!hasSearched}}">
+        <view class="section" wx:if="{{historyKeywords.length}}">
+          <view class="sectionHead">
+            <text class="sectionTitle">{{text.historySearch}}</text>
+            <view class="sectionAction" bindtap="clearHistory">{{text.clear}}</view>
+          </view>
+          <view class="chips">
+            <view class="chip" wx:for="{{historyKeywords}}" wx:key="*this" data-keyword="{{item}}" bindtap="useKeyword">{{item}}</view>
+          </view>
+        </view>
+
+        <view class="section">
+          <view class="sectionHead">
+            <text class="sectionTitle">{{text.discover}}</text>
+          </view>
+          <view class="chips">
+            <view class="chip" wx:for="{{discoverKeywords}}" wx:key="*this" data-keyword="{{item}}" bindtap="useKeyword">{{item}}</view>
+          </view>
+        </view>
+
+        <view class="section">
+          <view class="sectionHead">
+            <text class="sectionTitle hot">{{text.hotRank}}</text>
+          </view>
+          <view class="hotList">
+            <view class="hotCard" wx:for="{{hotRankList}}" wx:key="id" data-keyword="{{item.searchKeyword}}" bindtap="useKeyword">
+              <view class="hotInfo">
+                <view class="hotCardTitle">{{item.title}}</view>
+                <view class="hotBadge">{{item.badge}}</view>
+                <view class="hotDesc">{{item.desc}}</view>
+              </view>
+              <image class="hotImage" src="{{item.image}}" mode="aspectFill"></image>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <block wx:else>
+        <view class="resultHeader">
+          <view class="resultSummary">{{keyword}}{{text.searchResult}}</view>
+          <view class="resultReset" bindtap="resetSearch">{{text.resetSearch}}</view>
+        </view>
+
+        <scroll-view class="resultTabs" scroll-x enable-flex>
+          <view
+            wx:for="{{resultTabs}}"
+            wx:key="*this"
+            class="resultTab {{activeResultTab===index ? 'active' : ''}}"
+            data-index="{{index}}"
+            bindtap="changeResultTab"
+          >
+            {{item}}
+          </view>
+        </scroll-view>
+
+        <view class="resultList">
+          <view
+            class="resultCard resultCard--{{item.type}}"
+            wx:for="{{visibleResults}}"
+            wx:key="id"
+            data-id="{{item.id}}"
+            data-sourceid="{{item.sourceId}}"
+            data-type="{{item.type}}"
+            bindtap="openResultDetail"
+          >
+            <image class="resultImage resultImage--{{item.type}}" src="{{item.cover}}" mode="aspectFill"></image>
+            <view class="resultBody resultBody--{{item.type}}">
+              <view class="resultTitleRow">
+                <view class="resultTitle">{{item.title}}</view>
+                <view class="resultType resultType--{{item.type}}">
+                  {{item.type === 'activity' ? text.typeActivity : item.type === 'scenic' ? text.typeScenic : item.type === 'product' ? text.typeProduct : text.typeHotel}}
+                </view>
+              </view>
+              <view class="tagRow">
+                <text class="resultDayTag" wx:if="{{item.dayText}}">{{item.dayText}}</text>
+                <text class="resultTag" wx:for="{{item.tags}}" wx:key="*this">{{item}}</text>
+              </view>
+              <view class="resultFooter">
+                <text class="resultPrice">{{item.priceText || item.price}}</text>
+                <text class="resultSold" wx:if="{{item.soldText}}">{{item.soldText}}</text>
+              </view>
+            </view>
+          </view>
+
+          <view class="emptyBlock" wx:if="{{visibleResults.length === 0}}">
+            {{text.emptyResult}}
+          </view>
+        </view>
+      </block>
+    </block>
+
+    <block wx:else>
+      <view class="askPanel">
+        <view class="askInputWrap">
+          <textarea
+            class="askInput"
+            value="{{askQuestion}}"
+            placeholder="{{text.askPlaceholder}}"
+            placeholder-class="askPlaceholder"
+            auto-height
+            maxlength="-1"
+            bindinput="onAskInput"
+          />
+          <view class="askActions">
+            <view class="deepThinkBtn {{deepThink ? 'active' : ''}}" bindtap="toggleDeepThink">{{text.deepThink}}</view>
+            <view class="askRightActions">
+              <view class="voiceMiniBtn" bindtap="onAskVoice">
+                <view class="micStem"></view>
+                <view class="micBase"></view>
+              </view>
+              <view class="sendBtn" bindtap="submitAsk">{{text.send}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="section" wx:if="{{historyConversations.length}}">
+        <view class="sectionHead">
+          <text class="sectionTitle">{{text.historyConversation}}</text>
+          <block wx:if="{{historyEditMode}}">
+            <view class="sectionAction historyDoneBtn" bindtap="toggleAskHistoryEdit">完成</view>
+          </block>
+          <block wx:else>
+            <image
+              class="historyManageIcon"
+              src="/images/icons/history-trash.png"
+              mode="aspectFit"
+              bindtap="toggleAskHistoryEdit"
+            ></image>
+          </block>
+        </view>
+        <view class="historyCard">
+          <view class="historyRow" wx:for="{{visibleHistoryConversations}}" wx:key="id" data-id="{{item.id}}" bindtap="openAskHistory">
+            <view class="historyQuestion">{{item.title}}</view>
+            <view class="historyTime" wx:if="{{!historyEditMode}}">{{item.displayTime}}</view>
+            <view class="historyDelete" wx:if="{{historyEditMode}}" data-id="{{item.id}}" catchtap="removeAskHistory">×</view>
+          </view>
+          <view
+            class="historyToggle"
+            wx:if="{{historyConversations.length > 2 && !historyEditMode}}"
+            bindtap="toggleAskHistoryExpand"
+          >
+            {{historyConversationsExpanded ? '收起' : '展开'}}
+          </view>
+        </view>
+      </view>
+
+      <view class="section">
+        <view class="sectionHead">
+          <text class="sectionTitle">{{text.skillTitle}}</text>
+        </view>
+        <view class="skillGrid">
+          <view class="skillCard" wx:for="{{askSkills}}" wx:key="id" data-mode="{{item.mode}}" bindtap="useAskSkill">
+            <image class="skillIcon" src="{{item.icon}}" mode="aspectFit"></image>
+            <view class="skillTitle">{{item.title}}</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="section">
+        <view class="sectionHead">
+          <text class="sectionTitle">{{text.tryAsk}}</text>
+        </view>
+        <view class="askSuggestionList">
+          <view class="askSuggestion" wx:for="{{askSuggestions}}" wx:key="*this" data-question="{{item}}" bindtap="useAskPrompt">
+            {{item}}
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

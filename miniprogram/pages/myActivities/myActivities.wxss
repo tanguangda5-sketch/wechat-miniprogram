@@ -1,0 +1,127 @@
+﻿.page{
+  min-height:100vh;
+  background:#f6faf4;
+  padding:24rpx;
+}
+
+.tabs{
+  display:flex;
+  background:#ffffff;
+  border-radius:14rpx;
+  overflow:hidden;
+  margin-bottom:20rpx;
+}
+
+.tab{
+  flex:1;
+  text-align:center;
+  padding:20rpx 0;
+  font-size:26rpx;
+  color:#667566;
+}
+
+.tab.active{
+  background:#57984a;
+  color:#ffffff;
+  font-weight:600;
+}
+
+.empty{
+  text-align:center;
+  color:#99a598;
+  margin-top:120rpx;
+  font-size:28rpx;
+}
+
+.card{
+  background:#ffffff;
+  border-radius:18rpx;
+  padding:24rpx;
+  margin-bottom:20rpx;
+}
+
+.cardHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:16rpx;
+}
+
+.title{
+  flex:1;
+  font-size:30rpx;
+  font-weight:700;
+  color:#1f2a1f;
+  padding-right:20rpx;
+}
+
+.status{
+  font-size:26rpx;
+  white-space:nowrap;
+}
+
+.status.pending_payment{
+  color:#57984a;
+}
+
+.status.upcoming{
+  color:#57984a;
+}
+
+.status.pending_review{
+  color:#57984a;
+}
+
+.status.refunding{
+  color:#57984a;
+}
+
+.status.cancelled{
+  color:#99a598;
+}
+
+.status.completed{
+  color:#57984a;
+}
+
+.row{
+  display:flex;
+  margin:12rpx 0;
+  font-size:26rpx;
+  color:#233123;
+}
+
+.label{
+  width:140rpx;
+  color:#667566;
+}
+
+.priceRow{
+  justify-content:flex-end;
+  margin-top:16rpx;
+}
+
+.price{
+  font-size:34rpx;
+  color:#1f2a1f;
+  font-weight:700;
+}
+
+.actions{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:20rpx;
+}
+
+.actionBtn{
+  margin-left:16rpx;
+  border-radius:999rpx;
+  background:#edf5ea;
+  color:#233123;
+  font-size:26rpx;
+}
+
+.actionBtn.primary{
+  background:#57984a;
+  color:#ffffff;
+}

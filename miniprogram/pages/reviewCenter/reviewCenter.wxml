@@ -1,0 +1,61 @@
+<view class="page">
+  <view class="topTabs">
+    <view class="topTab {{topTab==='review'?'active':''}}" data-tab="review" bindtap="switchTopTab">评价</view>
+    <view class="topTab {{topTab==='qa'?'active':''}}" data-tab="qa" bindtap="switchTopTab">问答</view>
+    <view class="ruleText" bindtap="goRule">{{topTab==='review' ? '规则' : '规则'}}</view>
+  </view>
+
+  <block wx:if="{{topTab==='review'}}">
+    <view class="summaryCard">
+      <image class="summaryAvatar" src="{{userAvatar}}" mode="aspectFill" binderror="onAvatarError"></image>
+      <view class="summaryItem">
+        <view class="summaryValue">0</view>
+        <view class="summaryLabel">待评价</view>
+      </view>
+      <view class="summaryDivider"></view>
+      <view class="summaryItem">
+        <view class="summaryValue">0</view>
+        <view class="summaryLabel">可追评</view>
+      </view>
+      <view class="summaryDivider"></view>
+      <view class="summaryItem">
+        <view class="summaryValue">0</view>
+        <view class="summaryLabel">已评价</view>
+      </view>
+    </view>
+
+    <view class="subTabs">
+      <view
+        wx:for="{{reviewTabs}}"
+        wx:key="key"
+        class="subTab {{reviewTab===item.key?'active':''}}"
+        data-tab="{{item.key}}"
+        bindtap="switchReviewTab">
+        {{item.label}}
+      </view>
+    </view>
+
+    <view class="emptyBlock">
+      <view class="emptyPaper"></view>
+      <view class="emptyText">{{emptyText}}</view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view class="qaTabs">
+      <view
+        wx:for="{{qaTabs}}"
+        wx:key="key"
+        class="qaTab {{qaTab===item.key?'active':''}}"
+        data-tab="{{item.key}}"
+        bindtap="switchQaTab">
+        {{item.label}}
+      </view>
+    </view>
+
+    <view class="emptyBlock qaEmpty">
+      <view class="emptyPaper qaBubble"></view>
+      <view class="emptyText">{{qaEmptyText}}</view>
+    </view>
+  </block>
+</view>

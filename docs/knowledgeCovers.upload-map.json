@@ -1,0 +1,65 @@
+[
+  {
+    "_id": "agri-001",
+    "title": "春季蔬菜种植指南：从整地到移栽一次讲清",
+    "localCover": "E:\\三创赛\\covers\\spring-vegetable.png",
+    "targetCloudPath": "knowledge/covers/spring-vegetable.png",
+    "targetFileID": "cloud://cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845/knowledge/covers/spring-vegetable.png"
+  },
+  {
+    "_id": "agri-002",
+    "title": "农村小规模养鸡技巧：圈舍、饲喂与防疫要点",
+    "localCover": "E:\\三创赛\\covers\\village-chicken.png",
+    "targetCloudPath": "knowledge/covers/village-chicken.png",
+    "targetFileID": "cloud://cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845/knowledge/covers/village-chicken.png"
+  },
+  {
+    "_id": "agri-003",
+    "title": "田间常见病害识别大全：看叶片就能初步判断",
+    "localCover": "E:\\三创赛\\covers\\corn-disease.png",
+    "targetCloudPath": "knowledge/covers/corn-disease.png",
+    "targetFileID": "cloud://cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845/knowledge/covers/corn-disease.png"
+  },
+  {
+    "_id": "agri-004",
+    "title": "蜜蜂养殖入门：新手必须知道的四个环节",
+    "localCover": "E:\\三创赛\\covers\\bee-guide.png",
+    "targetCloudPath": "knowledge/covers/bee-guide.png",
+    "targetFileID": "cloud://cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845/knowledge/covers/bee-guide.png"
+  },
+  {
+    "_id": "agri-005",
+    "title": "小米、蜂蜜、山货怎么卖得更好：助农品牌包装思路",
+    "localCover": "E:\\三创赛\\covers\\rice-brand.png",
+    "targetCloudPath": "knowledge/covers/rice-brand.png",
+    "targetFileID": "cloud://cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845/knowledge/covers/rice-brand.png"
+  },
+  {
+    "_id": "culture-001",
+    "title": "寻迹承德：皇家园林的百年回响",
+    "localCover": "E:\\三创赛\\covers\\summer-palace.png",
+    "targetCloudPath": "knowledge/covers/summer-palace.png",
+    "targetFileID": "cloud://cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845/knowledge/covers/summer-palace.png"
+  },
+  {
+    "_id": "culture-002",
+    "title": "承德非遗小课堂：剪纸、布糊画与民间手作",
+    "localCover": "E:\\三创赛\\covers\\intangible-heritage.png",
+    "targetCloudPath": "knowledge/covers/intangible-heritage.png",
+    "targetFileID": "cloud://cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845/knowledge/covers/intangible-heritage.png"
+  },
+  {
+    "_id": "culture-003",
+    "title": "乡村赶集与节庆礼俗：游客最容易忽略的体验细节",
+    "localCover": "E:\\三创赛\\covers\\folk-custom.png",
+    "targetCloudPath": "knowledge/covers/folk-custom.png",
+    "targetFileID": "cloud://cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845/knowledge/covers/folk-custom.png"
+  },
+  {
+    "_id": "culture-004",
+    "title": "第一次去乡村怎么规划路线：游玩知识速读版",
+    "localCover": "E:\\三创赛\\covers\\travel-tips.png",
+    "targetCloudPath": "knowledge/covers/travel-tips.png",
+    "targetFileID": "cloud://cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845/knowledge/covers/travel-tips.png"
+  }
+]

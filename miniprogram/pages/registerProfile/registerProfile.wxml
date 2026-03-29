@@ -1,0 +1,79 @@
+<view class="page">
+  <view class="header">
+    <view class="title">{{text.title}}</view>
+    <view class="skip" bindtap="onSkip">{{text.skip}}</view>
+  </view>
+
+  <scroll-view scroll-y class="content">
+    <view class="section">
+      <view class="sectionLabel">{{text.avatar}}</view>
+      <view class="avatarBox" bindtap="onSelectAvatar">
+        <image src="{{avatar || '/images/avatar.png'}}" mode="aspectFill" class="avatar" binderror="onAvatarError"></image>
+        <view class="avatarHint">{{text.avatarHint}}</view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="sectionLabel">{{text.nickname}}</view>
+      <input
+        class="input"
+        type="text"
+        placeholder="{{text.nicknamePlaceholder}}"
+        placeholder-class="placeholder"
+        value="{{nickname}}"
+        bindinput="onNicknameInput"
+        maxlength="20"
+      />
+      <view class="inputHint">{{nickname.length}}/20</view>
+    </view>
+
+    <view class="section">
+      <view class="sectionLabel">{{text.gender}}</view>
+      <picker mode="selector" range="{{genders}}" bindchange="pickerGender" class="picker">
+        <view class="pickerView">
+          <text>{{gender}}</text>
+          <text class="arrow">></text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="section">
+      <view class="sectionLabel">{{text.birth}}</view>
+      <view class="birthToggle">
+        <text>{{text.enableBirth}}</text>
+        <switch checked="{{birthEnabled}}" color="#57984a" bindchange="toggleBirthEnabled" />
+      </view>
+
+      <view class="birthDateRow" wx:if="{{birthEnabled}}">
+        <picker mode="selector" range="{{years}}" value="{{selectedYearIndex}}" bindchange="pickerYear" class="picker">
+          <view class="pickerView pickerSmall">
+            <text>{{birth.year}}</text>
+            <text class="arrow">></text>
+          </view>
+        </picker>
+        <text class="separator">-</text>
+        <picker mode="selector" range="{{months}}" value="{{selectedMonthIndex}}" bindchange="pickerMonth" class="picker">
+          <view class="pickerView pickerSmall">
+            <text>{{birth.month}}</text>
+            <text class="arrow">></text>
+          </view>
+        </picker>
+        <text class="separator">-</text>
+        <picker mode="selector" range="{{days}}" value="{{selectedDayIndex}}" bindchange="pickerDay" class="picker">
+          <view class="pickerView pickerSmall">
+            <text>{{birth.day}}</text>
+            <text class="arrow">></text>
+          </view>
+        </picker>
+      </view>
+
+      <view class="birthUnknown" wx:else>{{text.birthUnknown}}</view>
+    </view>
+  </scroll-view>
+
+  <view class="footer">
+    <button class="btnSave" bindtap="onSave" loading="{{loading}}" disabled="{{loading}}">
+      {{text.saveAndContinue}}
+    </button>
+  </view>
+</view>

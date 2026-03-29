@@ -1,0 +1,54 @@
+<view class="page">
+  <view class="nav" style="padding-top: {{statusBarHeight}}px;">
+    <view class="back" bindtap="goBack">〈</view>
+    <view class="count">{{badgeCount}}</view>
+    <view class="tabs">
+      <view class="tab {{activeTab === 'interactive' ? 'active' : ''}}" bindtap="toggleFilterPanel">
+        <text>互动消息</text>
+        <text class="arrow">{{showFilterPanel ? '▲' : '▼'}}</text>
+      </view>
+      <view class="tab {{activeTab === 'follower' ? 'active' : ''}}" bindtap="switchToFollower">新关注我的</view>
+    </view>
+  </view>
+
+  <view wx:if="{{showFilterPanel}}" class="overlay" bindtap="closePanel">
+    <view class="filter-panel">
+      <view wx:for="{{filterOptions}}" wx:key="key" class="filter-item" data-key="{{item.key}}" bindtap="selectFilter">
+        <view class="filter-label">{{item.label}}</view>
+        <view wx:if="{{selectedFilterKey === item.key}}" class="filter-check">✓</view>
+      </view>
+    </view>
+  </view>
+
+  <scroll-view scroll-y class="content">
+    <block wx:if="{{activeTab === 'interactive'}}">
+      <view wx:for="{{interactionList}}" wx:key="id" class="interaction-item">
+        <view class="avatar" style="background: {{item.avatarColor}};">{{item.avatarText}}</view>
+        <view class="main">
+          <view class="name-line">
+            <view class="name">{{item.actorName}}</view>
+            <view wx:if="{{item.actorTag}}" class="tag">{{item.actorTag}}</view>
+          </view>
+          <view class="action">{{item.actionText}}</view>
+          <view class="content-text">{{item.content}}</view>
+          <view class="meta">{{item.targetTitle}} {{item.timeText}}</view>
+          <view class="actions">
+            <view class="action-btn" bindtap="onInteractionAction">回复</view>
+            <view class="action-btn" bindtap="onInteractionAction">赞</view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <block wx:else>
+      <view wx:for="{{followerList}}" wx:key="id" class="follower-item">
+        <view class="avatar" style="background: {{item.avatarColor}};">{{item.avatarText}}</view>
+        <view class="main">
+          <view class="name">{{item.userName}}</view>
+          <view class="meta">{{item.timeText}} 关注了你</view>
+        </view>
+        <view class="follow-btn" bindtap="onFollowBack">回关</view>
+      </view>
+    </block>
+  </scroll-view>
+</view>

@@ -1,0 +1,14 @@
+<view class="page">
+  <view class="chat-list">
+    <view wx:for="{{messages}}" wx:key="id" class="msg {{item.role === 'user' ? 'mine' : 'theirs'}}">
+      <view class="bubble">
+        <view>{{item.text}}</view>
+        <view class="time">{{item.timeText}}</view>
+      </view>
+    </view>
+  </view>
+  <view class="composer">
+    <input class="input" placeholder="回复商家客服..." value="{{inputValue}}" bindinput="onInput" />
+    <view class="send" bindtap="sendMessage">发送</view>
+  </view>
+</view>

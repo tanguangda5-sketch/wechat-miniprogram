@@ -1,0 +1,95 @@
+<view class="page" bindtap="closePanels">
+  <view class="topSpacer" style="padding-top: {{statusBarHeight}}px;"></view>
+
+  <view class="navBar">
+    <view class="backBtn" bindtap="closePage">
+      <view class="backArrow"></view>
+    </view>
+    <view class="navTitle">编辑收藏</view>
+    <view class="navRightPlaceholder"></view>
+  </view>
+
+  <view class="filterRow">
+    <view class="selector" bindtap="toggleCategoryPanel">
+      <text class="selectorText {{showCategoryPanel ? 'selectorTextActive' : ''}}">{{activeCategoryLabel}}</text>
+      <text class="selectorArrow">▼</text>
+    </view>
+    <view class="selector" bindtap="toggleCityPanel">
+      <text class="selectorText {{showCityPanel ? 'selectorTextActive' : ''}}">{{activeCityLabel}}</text>
+      <text class="selectorArrow">▼</text>
+    </view>
+  </view>
+
+  <view wx:if="{{showCategoryPanel || showCityPanel}}" class="panelMask"></view>
+
+  <view wx:if="{{showCategoryPanel}}" class="panelCard" catchtap="noop">
+    <view class="optionGrid">
+      <view
+        class="optionItem {{item.value === activeCategory ? 'optionItemActive' : ''}}"
+        wx:for="{{categoryOptions}}"
+        wx:key="value"
+        data-value="{{item.value}}"
+        bindtap="selectCategory"
+      >
+        {{item.label}} {{item.count}}
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{showCityPanel}}" class="panelCard" catchtap="noop">
+    <view class="optionGrid">
+      <view
+        class="optionItem {{item.value === activeCity ? 'optionItemActive' : ''}}"
+        wx:for="{{cityOptions}}"
+        wx:key="value"
+        data-value="{{item.value}}"
+        bindtap="selectCity"
+      >
+        {{item.label}} {{item.count}}
+      </view>
+    </view>
+  </view>
+
+  <view class="listWrap" wx:if="{{list.length}}">
+    <view class="editRow" wx:for="{{list}}" wx:key="key">
+      <view class="selectWrap" data-key="{{item.key}}" bindtap="toggleSelect">
+        <view class="selectCircle {{item.selected ? 'selectCircleActive' : ''}}">
+          <view wx:if="{{item.selected}}" class="selectCheck"></view>
+        </view>
+      </view>
+
+      <view class="resultCard resultCard--{{item.type}}">
+        <view class="resultImageWrap">
+          <image class="resultImage resultImage--{{item.type}}" src="{{item.cover}}" mode="aspectFill"></image>
+          <view class="badge">{{item.badgeText}}</view>
+        </view>
+        <view class="resultBody">
+          <view class="resultTitle">{{item.title}}</view>
+          <view class="tagRow" wx:if="{{item.displayTags.length}}">
+            <text class="resultTag" wx:for="{{item.displayTags}}" wx:key="*this">{{item}}</text>
+          </view>
+          <view class="resultFooter">
+            <view class="resultPrice" wx:if="{{item.priceText}}">{{item.priceText}}</view>
+            <view class="resultSold" wx:if="{{item.statsText}}">{{item.statsText}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:else class="emptyWrap">
+    <view class="emptyText">当前筛选下没有可编辑的收藏</view>
+  </view>
+
+  <view class="bottomBar">
+    <view class="selectAllWrap" bindtap="toggleSelectAll">
+      <view class="selectCircle {{allSelected ? 'selectCircleActive' : ''}}">
+        <view wx:if="{{allSelected}}" class="selectCheck"></view>
+      </view>
+      <text class="selectAllText">全选</text>
+    </view>
+    <view class="deleteBtn {{selectedKeys.length ? 'deleteBtnActive' : ''}}" bindtap="handleDelete">
+      删除<text wx:if="{{selectedKeys.length}}" class="deleteCount">{{selectedKeys.length}}</text>
+    </view>
+  </view>
+</view>

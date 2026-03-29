@@ -1,0 +1,32 @@
+﻿.page {
+  padding: 28rpx;
+  background: #f6faf4;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 18rpx;
+  padding: 28rpx;
+  box-shadow: 0 10rpx 28rpx rgba(0,0,0,0.06);
+}
+
+.title {
+  font-size: 44rpx;
+  font-weight: 700;
+  margin-bottom: 16rpx;
+}
+
+.time {
+  font-size: 26rpx;
+  color: #667566;
+  margin-bottom: 22rpx;
+}
+
+.content {
+  font-size: 32rpx;
+  color: #233123;
+  line-height: 1.75;
+}
+

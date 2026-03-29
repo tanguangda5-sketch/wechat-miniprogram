@@ -1,0 +1,65 @@
+<view class="page">
+
+<view class="tabs">
+  <view class="tab {{currentTab==='all'?'active':''}}" data-tab="all" bindtap="switchTab">全部</view>
+  <view class="tab {{currentTab==='pending_payment'?'active':''}}" data-tab="pending_payment" bindtap="switchTab">待支付</view>
+  <view class="tab {{currentTab==='upcoming'?'active':''}}" data-tab="upcoming" bindtap="switchTab">待出行</view>
+  <view class="tab {{currentTab==='pending_review'?'active':''}}" data-tab="pending_review" bindtap="switchTab">待评价</view>
+  <view class="tab {{currentTab==='after_sale'?'active':''}}" data-tab="after_sale" bindtap="switchTab">退款/售后</view>
+</view>
+
+<view wx:if="{{displayList.length===0}}" class="empty">
+  {{emptyText}}
+</view>
+
+<view wx:for="{{displayList}}" wx:key="_id" class="card" data-id="{{item._id}}" bindtap="goDetail">
+
+  <view class="cardHeader">
+    <view class="title">{{item.activityTitle}}</view>
+    <view class="status {{item.displayStatusKey}}">
+      {{item.displayStatusText}}
+    </view>
+  </view>
+
+  <view class="row">
+    <text class="label">出行日期</text>
+    <text>{{item.travelDate}}</text>
+  </view>
+
+  <view class="row">
+    <text class="label">出行天数</text>
+    <text>{{item.activityDays}}天</text>
+  </view>
+
+  <view class="row">
+    <text class="label">出行人数</text>
+    <text>成人{{item.adultCount}}人 儿童{{item.childCount}}人</text>
+  </view>
+
+  <view class="row priceRow">
+    <text class="price">价格：¥{{item.totalPrice}}</text>
+  </view>
+
+  <view class="actions" catchtap="noop">
+
+    <button
+      wx:if="{{item.actions.canPay}}"
+      class="actionBtn primary"
+      data-id="{{item._id}}"
+      bindtap="payOrder">
+      立即支付
+    </button>
+
+    <button
+      wx:if="{{item.actions.canReview}}"
+      class="actionBtn primary"
+      data-id="{{item._id}}"
+      bindtap="goReview">
+      立即评价
+    </button>
+
+  </view>
+
+</view>
+
+</view>

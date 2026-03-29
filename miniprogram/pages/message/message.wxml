@@ -1,0 +1,53 @@
+<view class="page">
+  <view class="topbar" style="padding-top: {{statusBarHeight}}px;">
+    <view class="icon-btn" bindtap="onMenuTap">≡</view>
+    <view class="icon-btn" bindtap="onSearchTap">⌕</view>
+    <view class="icon-btn" bindtap="onAddTap">＋</view>
+  </view>
+
+  <scroll-view class="story-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+    <view
+      wx:for="{{storyList}}"
+      wx:key="id"
+      class="story-item"
+      data-kind="{{item.kind}}"
+      data-entry-type="{{item.entryType}}"
+      data-id="{{item.id}}"
+      data-note-id="{{item.noteId}}"
+      bindtap="openStory"
+    >
+      <view wx:if="{{item.avatarUrl}}" class="story-avatar image-avatar">
+        <image class="story-avatar-image" src="{{item.avatarUrl}}" mode="aspectFill" />
+        <view wx:if="{{item.kind === 'self-note'}}" class="story-plus">+</view>
+      </view>
+      <view wx:else class="story-avatar" style="background: {{item.avatarColor}};">
+        <text>{{item.avatarText}}</text>
+      </view>
+      <view wx:if="{{item.unreadText}}" class="story-badge">{{item.unreadText}}</view>
+      <view wx:if="{{item.noteTitle}}" class="story-dot"></view>
+      <view class="story-title">{{item.title}}</view>
+    </view>
+  </scroll-view>
+
+  <view class="list">
+    <view
+      wx:for="{{homeRows}}"
+      wx:key="id"
+      class="row"
+      data-kind="{{item.kind}}"
+      data-entry-type="{{item.entryType}}"
+      data-id="{{item.id}}"
+      bindtap="openRow"
+    >
+      <view class="row-avatar" style="background: {{item.avatarColor}};">{{item.avatarText}}</view>
+      <view class="row-main">
+        <view class="row-title">{{item.title}}</view>
+        <view class="row-subtitle">{{item.subtitle || item.preview}}</view>
+      </view>
+      <view class="row-side">
+        <view class="row-time">{{item.timeText}}</view>
+        <view wx:if="{{item.unreadText}}" class="row-unread">{{item.unreadText}}</view>
+      </view>
+    </view>
+  </view>
+</view>

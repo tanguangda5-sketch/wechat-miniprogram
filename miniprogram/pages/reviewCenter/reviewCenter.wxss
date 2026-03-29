@@ -1,0 +1,134 @@
+﻿.page{
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+.topTabs{
+  display: flex;
+  align-items: center;
+  padding: 24rpx 28rpx 0;
+}
+
+.topTab{
+  margin-right: 44rpx;
+  font-size: 34rpx;
+  color: #99a598;
+  line-height: 1.4;
+}
+
+.topTab.active{
+  color: #1f2a1f;
+  font-weight: 700;
+}
+
+.ruleText{
+  margin-left: auto;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1f2a1f;
+}
+
+.summaryCard{
+  display: flex;
+  align-items: center;
+  padding: 34rpx 30rpx 36rpx;
+}
+
+.summaryAvatar{
+  width: 84rpx;
+  height: 84rpx;
+  border-radius: 999rpx;
+  background: #eef5ea;
+}
+
+.summaryItem{
+  width: 170rpx;
+  text-align: center;
+}
+
+.summaryValue{
+  font-size: 54rpx;
+  font-weight: 700;
+  color: #1b2230;
+}
+
+.summaryLabel{
+  margin-top: 8rpx;
+  font-size: 28rpx;
+  color: #8ea08b;
+}
+
+.summaryDivider{
+  width: 1rpx;
+  height: 72rpx;
+  background: #e9f1e6;
+}
+
+.subTabs,
+.qaTabs{
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-top: 12rpx solid #f6f7f9;
+}
+
+.subTab,
+.qaTab{
+  position: relative;
+  flex: 1;
+  padding: 28rpx 0 24rpx;
+  text-align: center;
+  font-size: 30rpx;
+  color: #8c94a0;
+}
+
+.subTab.active,
+.qaTab.active{
+  color: #1f2a1f;
+  font-weight: 700;
+}
+
+.subTab.active::after,
+.qaTab.active::after{
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 8rpx;
+  width: 36rpx;
+  height: 6rpx;
+  margin-left: -18rpx;
+  border-radius: 999rpx;
+  background: #1f2a1f;
+}
+
+.emptyBlock{
+  display: flex;
+  min-height: 58vh;
+  padding-top: 170rpx;
+  box-sizing: border-box;
+  flex-direction: column;
+  align-items: center;
+}
+
+.emptyPaper{
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 24rpx;
+  background: linear-gradient(180deg, #f4f5f8 0%, #e4eee0 100%);
+}
+
+.qaBubble{
+  border-radius: 999rpx;
+}
+
+.emptyText{
+  margin-top: 28rpx;
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #99a598;
+}
+
+.qaEmpty{
+  padding-top: 140rpx;
+}
+

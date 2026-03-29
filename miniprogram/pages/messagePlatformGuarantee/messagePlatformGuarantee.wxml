@@ -1,0 +1,13 @@
+<view class="page">
+  <view wx:for="{{list}}" wx:key="id" class="card">
+    <view class="time">{{item.timeText}}</view>
+    <view class="title">{{item.title}}</view>
+    <view class="subtitle">{{item.subtitle}}</view>
+    <view class="content">{{item.content}}</view>
+    <view class="order-card">
+      <view class="order-title">{{item.orderTitle}}</view>
+      <view class="order-no">订单号：{{item.orderNo}}</view>
+    </view>
+    <view class="action" bindtap="onAction">{{item.actionText}}</view>
+  </view>
+</view>

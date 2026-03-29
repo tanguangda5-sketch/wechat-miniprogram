@@ -1,0 +1,38 @@
+<view class="page">
+
+<view class="card">
+
+  <view class="row">
+    <text class="label">*中文姓名</text>
+    <input class="input"
+           placeholder="请输入"
+           value="{{name}}"
+           bindinput="onName" />
+  </view>
+
+  <view class="row">
+    <text class="label">*证件类型</text>
+
+    <picker mode="selector"
+            range="{{idTypes}}"
+            value="{{idTypeIndex}}"
+            bindchange="onIdType">
+      <view class="picker">
+        {{idTypes[idTypeIndex]}}
+      </view>
+    </picker>
+  </view>
+
+  <view class="row">
+    <text class="label">*证件号码</text>
+    <input class="input"
+           placeholder="请输入"
+           value="{{idNo}}"
+           bindinput="onIdNo" />
+  </view>
+
+</view>
+
+<button class="saveBtn" bindtap="onSave">保存</button>
+
+</view>

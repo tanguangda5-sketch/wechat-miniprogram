@@ -1,0 +1,11 @@
+<view wx:if="{{note}}" class="page">
+  <view class="hero" style="background: {{note.avatarColor}};">{{note.avatarText}}</view>
+  <view class="author">{{note.userName}}</view>
+  <view class="time">{{note.timeText}} 发布</view>
+  <view class="title">{{note.noteTitle}}</view>
+  <view class="content">{{note.noteSummary}}</view>
+  <view class="card">
+    <view class="card-title">这是一条好友最近发布的笔记</view>
+    <view class="card-desc">后续接入真实笔记系统后，这里会展示完整图文内容、评论和点赞。</view>
+  </view>
+</view>

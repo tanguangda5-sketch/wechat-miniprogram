@@ -1,0 +1,9 @@
+.page { min-height:100vh; background:#fff; padding:32rpx 24rpx; box-sizing:border-box; }
+.hero { width:96rpx; height:96rpx; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:36rpx; font-weight:700; }
+.author { margin-top:18rpx; font-size:34rpx; font-weight:700; color:#111; }
+.time { margin-top:8rpx; font-size:24rpx; color:#9a9a9a; }
+.title { margin-top:28rpx; font-size:40rpx; font-weight:700; color:#161616; line-height:1.4; }
+.content { margin-top:20rpx; font-size:30rpx; line-height:1.8; color:#464646; }
+.card { margin-top:30rpx; padding:24rpx; border-radius:24rpx; background:#f7f8fb; }
+.card-title { font-size:28rpx; font-weight:700; color:#222; }
+.card-desc { margin-top:12rpx; font-size:24rpx; line-height:1.7; color:#818181; }

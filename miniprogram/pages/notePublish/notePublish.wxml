@@ -1,0 +1,12 @@
+<view class="page">
+  <view class="header">发布笔记</view>
+  <input class="title-input" placeholder="写一个笔记标题" value="{{title}}" bindinput="onTitleInput" />
+  <textarea
+    class="content-input"
+    placeholder="记录你的出行体验、路线建议或搭子心得..."
+    value="{{content}}"
+    bindinput="onContentInput"
+  />
+  <view class="tips">这一版先把入口接通，后续再接真实笔记发布能力。</view>
+  <view class="submit-btn" bindtap="submitNote">发布笔记</view>
+</view>

@@ -1,0 +1,36 @@
+<view class="page">
+  <view class="backdrop">
+    <view class="mapGrid"></view>
+    <view class="route routeA"></view>
+    <view class="route routeB"></view>
+    <view class="marker markerA"></view>
+    <view class="marker markerB"></view>
+    <view class="marker markerC"></view>
+  </view>
+
+  <view class="mask"></view>
+
+  <view class="sheetWrap">
+    <view class="sheet">
+      <view class="brand">{{text.brand}}</view>
+      <view class="title">{{text.title}}</view>
+
+      <view class="content">
+        <text class="paragraph">{{text.intro1}}</text>
+        <text class="paragraph">{{text.intro2}}</text>
+        <text class="paragraph strong">{{text.intro3}}</text>
+      </view>
+
+      <view class="actions">
+        <button class="btnGhost" bindtap="onDisagree">{{text.disagree}}</button>
+        <button
+          class="btnPrimary"
+          open-type="agreePrivacyAuthorization"
+          bindagreeprivacyauthorization="onAgreePrivacy"
+        >
+          {{text.agree}}
+        </button>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,47 @@
+<view class="page">
+
+<view class="tip">
+  * 请务必保证所填项与出游所持证件一致
+</view>
+
+<view class="actions">
+  <button class="addBtn" bindtap="onAdd">新增出行人</button>
+</view>
+
+<view wx:if="{{list.length===0}}" class="empty">
+  暂无出行人，请先新增
+</view>
+
+<view class="list" wx:else>
+  <view class="item" wx:for="{{list}}" wx:key="_id">
+
+    <!-- 左侧：勾选区 -->
+    <view class="left" data-id="{{item._id}}" bindtap="onToggle">
+      <view class="check {{isSelectedMap[item._id] ? 'on' : ''}}">
+        <text wx:if="{{isSelectedMap[item._id]}}">✓</text>
+      </view>
+
+      <view class="info">
+        <view class="name">{{item.name}}</view>
+        <view class="idno">{{item.idType}}：{{item.idNo}}</view>
+      </view>
+    </view>
+
+    <!-- 右侧：编辑 -->
+    <view class="right">
+      <button class="editBtn" size="mini" data-id="{{item._id}}" bindtap="onEdit">修改</button>
+    </view>
+
+  </view>
+</view>
+
+<!-- 底部按钮 -->
+<view class="footer">
+  <button class="footerBtn {{footerEnabled ? 'enabled' : 'disabled'}}"
+          disabled="{{!footerEnabled}}"
+          bindtap="onDone">
+    {{footerText}}
+  </button>
+</view>
+
+</view>

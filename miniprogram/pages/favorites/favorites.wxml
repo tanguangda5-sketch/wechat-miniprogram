@@ -1,0 +1,134 @@
+<view class="page" bindtap="closePanels">
+  <view class="topSpacer" style="padding-top: {{statusBarHeight}}px;"></view>
+
+  <view class="navBar">
+    <view class="backBtn" bindtap="goBack">
+      <view class="backArrow"></view>
+    </view>
+
+    <view class="navTabs">
+      <view
+        class="navTab {{activeTab === 'favorites' ? 'navTabActive' : ''}}"
+        data-tab="favorites"
+        bindtap="switchTab"
+      >
+        收藏
+      </view>
+      <view
+        class="navTab {{activeTab === 'footprints' ? 'navTabActive' : ''}}"
+        data-tab="footprints"
+        bindtap="switchTab"
+      >
+        浏览
+      </view>
+    </view>
+
+    <view
+      wx:if="{{activeTab === 'footprints'}}"
+      class="navAction"
+      bindtap="handleClearFootprints"
+    >
+      清空
+    </view>
+    <view
+      wx:else
+      class="navAction"
+      bindtap="goEditFavorites"
+    >
+      编辑
+    </view>
+    <view class="navSpacer"></view>
+  </view>
+
+  <view wx:if="{{activeTab === 'favorites'}}" class="filterRow">
+    <view class="selector" bindtap="toggleCategoryPanel">
+      <text class="selectorText {{showCategoryPanel ? 'selectorTextActive' : ''}}">{{activeCategoryLabel}}</text>
+      <text class="selectorArrow">▼</text>
+    </view>
+    <view class="selector" bindtap="toggleCityPanel">
+      <text class="selectorText {{showCityPanel ? 'selectorTextActive' : ''}}">{{activeCityLabel}}</text>
+      <text class="selectorArrow">▼</text>
+    </view>
+  </view>
+
+  <view wx:if="{{showCategoryPanel || showCityPanel}}" class="panelMask"></view>
+
+  <view wx:if="{{showCategoryPanel}}" class="panelCard" catchtap="noop">
+    <view class="optionGrid">
+      <view
+        class="optionItem {{item.value === activeCategory ? 'optionItemActive' : ''}}"
+        wx:for="{{categoryOptions}}"
+        wx:key="value"
+        data-value="{{item.value}}"
+        bindtap="selectCategory"
+      >
+        {{item.label}} {{item.count}}
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{showCityPanel}}" class="panelCard" catchtap="noop">
+    <view class="optionGrid">
+      <view
+        class="optionItem {{item.value === activeCity ? 'optionItemActive' : ''}}"
+        wx:for="{{cityOptions}}"
+        wx:key="value"
+        data-value="{{item.value}}"
+        bindtap="selectCity"
+      >
+        {{item.label}} {{item.count}}
+      </view>
+    </view>
+  </view>
+
+  <block wx:if="{{activeTab === 'favorites' && list.length}}">
+    <view class="listWrap">
+      <view class="resultCard resultCard--{{item.type}}" wx:for="{{list}}" wx:key="key" data-url="{{item.targetUrl}}" bindtap="openDetail">
+        <view class="resultImageWrap">
+          <image class="resultImage resultImage--{{item.type}}" src="{{item.cover}}" mode="aspectFill"></image>
+          <view class="badge">{{item.badgeText}}</view>
+        </view>
+        <view class="resultBody">
+          <view class="resultTitle">{{item.title}}</view>
+          <view class="tagRow" wx:if="{{item.displayTags.length}}">
+            <text class="resultTag" wx:for="{{item.displayTags}}" wx:key="*this">{{item}}</text>
+          </view>
+          <view class="resultFooter">
+            <view class="resultPrice" wx:if="{{item.priceText}}">{{item.priceText}}</view>
+            <view class="resultSold" wx:if="{{item.statsText}}">{{item.statsText}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <block wx:elif="{{activeTab === 'footprints' && groups.length}}">
+    <view class="listWrap">
+      <view class="group" wx:for="{{groups}}" wx:key="label" wx:for-item="group">
+        <view class="groupTitle">{{group.label}}</view>
+        <view class="resultCard resultCard--{{item.type}}" wx:for="{{group.items}}" wx:key="key" data-url="{{item.targetUrl}}" bindtap="openDetail">
+          <view class="resultImageWrap">
+            <image class="resultImage resultImage--{{item.type}}" src="{{item.cover}}" mode="aspectFill"></image>
+            <view class="badge">{{item.badgeText}}</view>
+          </view>
+          <view class="resultBody">
+            <view class="resultTitle">{{item.title}}</view>
+            <view class="tagRow" wx:if="{{item.displayTags.length}}">
+              <text class="resultTag" wx:for="{{item.displayTags}}" wx:key="*this">{{item}}</text>
+            </view>
+            <view class="resultFooter">
+              <view class="resultPrice" wx:if="{{item.priceText}}">{{item.priceText}}</view>
+              <view class="resultSold" wx:if="{{item.statsText}}">{{item.statsText}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <view wx:else class="emptyWrap">
+    <view class="emptyIcon"></view>
+    <view class="emptyTitle">{{emptyText}}</view>
+    <view class="emptyDesc">筛选会根据当前类别联动城市，详情页收藏和浏览记录都会自动同步到这里。</view>
+  </view>
+</view>

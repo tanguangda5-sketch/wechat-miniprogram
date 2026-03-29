@@ -1,0 +1,9 @@
+{
+  "name": "yuxiaoheAgent",
+  "version": "1.0.0",
+  "dependencies": {
+    "@cloudbase/node-sdk": "latest",
+    "openai": "^4.104.0",
+    "wx-server-sdk": "latest"
+  }
+}

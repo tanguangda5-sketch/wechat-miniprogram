@@ -1,0 +1,94 @@
+<view class="page" wx:if="{{detail}}">
+
+<view class="card">
+  <view class="title">{{detail.activityTitle}}</view>
+
+  <view class="row">
+    <text class="label">订单状态</text>
+    <text class="status {{detail.displayStatusKey}}">{{detail.displayStatusText}}</text>
+  </view>
+
+  <view class="row">
+    <text class="label">出行日期</text>
+    <text>{{detail.travelDate}}</text>
+  </view>
+
+  <view class="row">
+    <text class="label">出行天数</text>
+    <text>{{detail.activityDays}}天</text>
+  </view>
+
+  <view class="row">
+    <text class="label">出行人数</text>
+    <text>成人{{detail.adultCount}}人 儿童{{detail.childCount}}人</text>
+  </view>
+
+  <view class="row">
+    <text class="label">订单金额</text>
+    <text class="price">¥{{detail.totalPrice}}</text>
+  </view>
+
+  <view wx:if="{{detail.displayStatusKey==='pending_payment'}}" class="countdown">
+    剩余支付时间：{{countdownText}}
+  </view>
+
+  <view wx:if="{{detail.displayStatusKey==='refunding'}}" class="refundBox">
+    退款进度：退款处理中，退款完成后将退回至原支付账户
+  </view>
+</view>
+
+<view class="card">
+  <view class="sectionTitle">联系人</view>
+  <view class="row"><text class="label">姓名</text><text>{{detail.contact.name}}</text></view>
+  <view class="row"><text class="label">手机号</text><text>{{detail.contact.phone}}</text></view>
+</view>
+
+<view class="card">
+  <view class="sectionTitle">出行人</view>
+  <view wx:for="{{detail.travelers}}" wx:key="_id" class="traveler">
+    <view>{{item.name}}</view>
+    <view class="travSub">{{item.idType}}：{{item.idNo}}</view>
+  </view>
+</view>
+
+<view class="bottomBar">
+
+  <button class="actionBtn gray" bindtap="contactMerchant">
+    商家客服
+  </button>
+
+  <button class="actionBtn gray" bindtap="contactPlatform">
+    平台客服
+  </button>
+
+  <button
+    wx:if="{{detail.actions.canCancel}}"
+    class="actionBtn gray"
+    bindtap="cancelOrder">
+    取消订单
+  </button>
+
+  <button
+    wx:if="{{detail.actions.canPay}}"
+    class="actionBtn primary"
+    bindtap="payOrder">
+    立即支付
+  </button>
+
+  <button
+    wx:if="{{detail.actions.canRefund}}"
+    class="actionBtn primary"
+    bindtap="refundOrder">
+    退款/售后
+  </button>
+
+  <button
+    wx:if="{{detail.actions.canReview}}"
+    class="actionBtn primary"
+    bindtap="goReview">
+    立即评价
+  </button>
+
+</view>
+
+</view>

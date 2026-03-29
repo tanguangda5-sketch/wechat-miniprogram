@@ -1,0 +1,443 @@
+[
+  {
+    "_id": "agri-001",
+    "channel": "agri",
+    "status": "published",
+    "title": "春季蔬菜种植指南：从整地到移栽一次讲清",
+    "publishTime": "2026-03-12 09:20",
+    "tags": [
+      "种地",
+      "农技"
+    ],
+    "wordCount": 1268,
+    "summary": "适合乡村农户和家庭菜园的新手入门文章，覆盖整地、起垄、育苗、移栽、追肥和浇水频次，帮助你在春季更稳地把叶菜和瓜果类种好。",
+    "cover": "cloud://cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845/knowledge/covers/spring-vegetable.png",
+    "views": 320,
+    "likes": 96,
+    "favorites": 42,
+    "comments": 12,
+    "shareCount": 8,
+    "author": "农旅e站运营部",
+    "isPinned": false,
+    "content": [
+      {
+        "type": "p",
+        "text": "春耕时节，蔬菜种植要先把土壤条件摸清楚。地块排水好、光照足，后续管理会轻松很多。"
+      },
+      {
+        "type": "h2",
+        "text": "一、播种前准备"
+      },
+      {
+        "type": "p",
+        "text": "整地时建议深翻 20~25 厘米，清理残茬和石块，结合腐熟有机肥改良土壤。"
+      },
+      {
+        "type": "p",
+        "text": "叶菜类可采用小高畦，瓜果类更适合高垄栽培，利于排水和根系生长。"
+      },
+      {
+        "type": "h2",
+        "text": "二、移栽后管理"
+      },
+      {
+        "type": "p",
+        "text": "缓苗期以小水勤浇为主，避免一次浇透后又长期缺水。定植后一周可视苗情追施稀薄水肥。"
+      },
+      {
+        "type": "p",
+        "text": "注意早晚温差，必要时通过地膜、拱棚等方式保温。遇连阴雨天气时要重点防病。"
+      }
+    ],
+    "location": null,
+    "commentList": [
+      {
+        "user": "田园小李",
+        "content": "步骤很详细，适合新手。",
+        "time": "2小时前"
+      },
+      {
+        "user": "菜园阿姨",
+        "content": "想看黄瓜育苗的专门教程。",
+        "time": "1小时前"
+      }
+    ],
+    "updatedAt": "2026-03-12 09:20"
+  },
+  {
+    "_id": "agri-002",
+    "channel": "agri",
+    "status": "published",
+    "title": "农村小规模养鸡技巧：圈舍、饲喂与防疫要点",
+    "publishTime": "2026-03-11 18:40",
+    "tags": [
+      "养殖",
+      "助农"
+    ],
+    "wordCount": 1089,
+    "summary": "面向返乡创业与庭院经济用户，讲清鸡舍通风保暖、分阶段投喂、疫苗安排与常见问题处理，帮助养殖更稳定。",
+    "cover": "cloud://cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845/knowledge/covers/village-chicken.png",
+    "views": 285,
+    "likes": 116,
+    "favorites": 53,
+    "comments": 9,
+    "shareCount": 6,
+    "author": "农技服务站",
+    "isPinned": false,
+    "content": [
+      {
+        "type": "p",
+        "text": "小规模散养鸡，关键不在多，而在稳。圈舍干燥、通风和卫生是基础。"
+      },
+      {
+        "type": "h2",
+        "text": "一、圈舍建设"
+      },
+      {
+        "type": "p",
+        "text": "鸡舍应做到冬季保温、夏季遮阴，地面建议保持干爽，垫料要定期更换。"
+      },
+      {
+        "type": "h2",
+        "text": "二、投喂与防疫"
+      },
+      {
+        "type": "p",
+        "text": "雏鸡、育成鸡、产蛋鸡的饲料配比不同，切勿长期混用。防疫上按当地兽医站要求做好基础免疫。"
+      },
+      {
+        "type": "p",
+        "text": "发现鸡群精神差、采食下降时，要及时隔离观察并请专业人员处理。"
+      }
+    ],
+    "location": {
+      "name": "百花谷禽养示范区",
+      "address": "承德市双桥区示范园东侧",
+      "latitude": 40.9769,
+      "longitude": 117.9392
+    },
+    "commentList": [
+      {
+        "user": "返乡青年小周",
+        "content": "很适合我这种刚起步的。",
+        "time": "3小时前"
+      }
+    ],
+    "updatedAt": "2026-03-11 18:40"
+  },
+  {
+    "_id": "agri-003",
+    "channel": "agri",
+    "status": "published",
+    "title": "田间常见病害识别大全：看叶片就能初步判断",
+    "publishTime": "2026-03-10 12:10",
+    "tags": [
+      "农技",
+      "科普"
+    ],
+    "wordCount": 1396,
+    "summary": "从叶斑、卷叶、黄化、腐烂等症状入手，帮助农户快速识别玉米、蔬菜常见病害，减少误判和盲目用药。",
+    "cover": "cloud://cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845/knowledge/covers/corn-disease.png",
+    "views": 377,
+    "likes": 164,
+    "favorites": 72,
+    "comments": 15,
+    "shareCount": 10,
+    "author": "县农技推广中心",
+    "isPinned": false,
+    "content": [
+      {
+        "type": "p",
+        "text": "病害识别不能只看一种症状，要结合土壤湿度、天气、施肥和作物长势综合判断。"
+      },
+      {
+        "type": "h2",
+        "text": "一、叶片黄化"
+      },
+      {
+        "type": "p",
+        "text": "黄化可能由缺素、积水或病菌侵染导致，可先观察是否伴随斑点、萎蔫或烂根。"
+      },
+      {
+        "type": "h2",
+        "text": "二、卷叶和斑点"
+      },
+      {
+        "type": "p",
+        "text": "卷叶常和虫害、缺水、高温相关；斑点则更需要判断边缘颜色和扩展速度。"
+      },
+      {
+        "type": "p",
+        "text": "一旦确认病害，应优先采取农业防治和物理防治，药剂使用要规范。"
+      }
+    ],
+    "location": {
+      "name": "百花谷农技服务点",
+      "address": "承德市双桥区农技培训中心",
+      "latitude": 40.9731,
+      "longitude": 117.9321
+    },
+    "commentList": [
+      {
+        "user": "玉米大户老赵",
+        "content": "建议再补充虫害和病害的区别。",
+        "time": "昨天"
+      }
+    ],
+    "updatedAt": "2026-03-10 12:10"
+  },
+  {
+    "_id": "agri-004",
+    "channel": "agri",
+    "status": "published",
+    "title": "蜜蜂养殖入门：新手必须知道的四个环节",
+    "publishTime": "2026-03-09 09:00",
+    "tags": [
+      "养殖",
+      "农技"
+    ],
+    "wordCount": 1160,
+    "summary": "从蜂群选择、蜂箱摆放、花期跟踪到越冬管理，为新手梳理养蜂的核心流程，适合乡村副业与特色体验项目使用。",
+    "cover": "cloud://cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845/knowledge/covers/bee-guide.png",
+    "views": 241,
+    "likes": 88,
+    "favorites": 39,
+    "comments": 7,
+    "shareCount": 4,
+    "author": "乡创课堂",
+    "isPinned": false,
+    "content": [
+      {
+        "type": "p",
+        "text": "养蜂需要耐心和细致观察。先学会识别蜂群状态，比急着扩群更重要。"
+      },
+      {
+        "type": "h2",
+        "text": "一、选群与摆放"
+      },
+      {
+        "type": "p",
+        "text": "新手建议从群势稳定的蜂群入手，蜂箱应避风向阳、远离人流密集区。"
+      },
+      {
+        "type": "h2",
+        "text": "二、花期与饲喂"
+      },
+      {
+        "type": "p",
+        "text": "根据当地蜜源植物花期安排外出采蜜或补饲，流蜜期和缺蜜期管理完全不同。"
+      }
+    ],
+    "location": null,
+    "commentList": [],
+    "updatedAt": "2026-03-09 09:00"
+  },
+  {
+    "_id": "agri-005",
+    "channel": "agri",
+    "status": "published",
+    "title": "小米、蜂蜜、山货怎么卖得更好：助农品牌包装思路",
+    "publishTime": "2026-03-08 16:50",
+    "tags": [
+      "助农",
+      "科普"
+    ],
+    "wordCount": 980,
+    "summary": "围绕产品命名、包装故事、电商图文和线下伴手礼陈列，帮助乡村特色产品更容易被游客看见、购买和复购。",
+    "cover": "cloud://cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845/knowledge/covers/rice-brand.png",
+    "views": 263,
+    "likes": 121,
+    "favorites": 68,
+    "comments": 5,
+    "shareCount": 12,
+    "author": "农旅品牌组",
+    "isPinned": false,
+    "content": [
+      {
+        "type": "p",
+        "text": "助农不只是卖货，更是把产地故事、品质背书和购买场景说清楚。"
+      },
+      {
+        "type": "h2",
+        "text": "一、品牌感从哪里来"
+      },
+      {
+        "type": "p",
+        "text": "一个容易记住的名字、一段真实的产地故事，再配合统一包装，就能明显提升产品辨识度。"
+      },
+      {
+        "type": "p",
+        "text": "线下民宿、景区和市集是重要触点，建议打造试吃与体验式陈列。"
+      }
+    ],
+    "location": {
+      "name": "农旅e站助农展销中心",
+      "address": "承德市旅游集散中心一层",
+      "latitude": 40.9752,
+      "longitude": 117.9448
+    },
+    "commentList": [],
+    "updatedAt": "2026-03-08 16:50"
+  },
+  {
+    "_id": "culture-001",
+    "channel": "culture",
+    "status": "published",
+    "title": "寻迹承德：皇家园林的百年回响",
+    "publishTime": "2026-03-12 08:30",
+    "tags": [
+      "景点文化"
+    ],
+    "wordCount": 1342,
+    "summary": "从避暑山庄与外八庙的空间格局说起，读懂承德如何在山水之间承载历史记忆，也更适合作为游客行前阅读。",
+    "cover": "cloud://cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845/knowledge/covers/summer-palace.png",
+    "views": 356,
+    "likes": 156,
+    "favorites": 91,
+    "comments": 18,
+    "shareCount": 13,
+    "author": "承德文旅号",
+    "isPinned": false,
+    "content": [
+      {
+        "type": "p",
+        "text": "承德的景观之美，离不开皇家园林与山地地貌的共生。"
+      },
+      {
+        "type": "h2",
+        "text": "一、为什么要读懂景点文化"
+      },
+      {
+        "type": "p",
+        "text": "很多游客看见的是建筑和风景，真正留下记忆的是它背后的制度、审美和时代背景。"
+      },
+      {
+        "type": "p",
+        "text": "了解景点文化后，再走进园林，会更容易感受到空间布局与建筑意义。"
+      }
+    ],
+    "location": {
+      "name": "避暑山庄景区",
+      "address": "河北省承德市双桥区丽正门路 20 号",
+      "latitude": 40.991,
+      "longitude": 117.9396
+    },
+    "commentList": [
+      {
+        "user": "游客小宁",
+        "content": "准备周末去，先收藏了。",
+        "time": "刚刚"
+      }
+    ],
+    "updatedAt": "2026-03-12 08:30"
+  },
+  {
+    "_id": "culture-002",
+    "channel": "culture",
+    "status": "published",
+    "title": "承德非遗小课堂：剪纸、布糊画与民间手作",
+    "publishTime": "2026-03-11 10:00",
+    "tags": [
+      "非遗"
+    ],
+    "wordCount": 1016,
+    "summary": "用更轻松的方式认识承德地区常见非遗体验项目，适合作为亲子游、研学游的内容参考。",
+    "cover": "cloud://cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845/knowledge/covers/intangible-heritage.png",
+    "views": 212,
+    "likes": 97,
+    "favorites": 60,
+    "comments": 7,
+    "shareCount": 5,
+    "author": "非遗研学组",
+    "isPinned": false,
+    "content": [
+      {
+        "type": "p",
+        "text": "非遗不是只能远观的展品，也可以变成可参与、可体验、可带走记忆的旅程。"
+      },
+      {
+        "type": "p",
+        "text": "建议在体验前了解工艺渊源，在现场更容易与老师傅建立交流。"
+      }
+    ],
+    "location": {
+      "name": "承德非遗体验馆",
+      "address": "承德市双桥区文化艺术中心",
+      "latitude": 40.9771,
+      "longitude": 117.9365
+    },
+    "commentList": [],
+    "updatedAt": "2026-03-11 10:00"
+  },
+  {
+    "_id": "culture-003",
+    "channel": "culture",
+    "status": "published",
+    "title": "乡村赶集与节庆礼俗：游客最容易忽略的体验细节",
+    "publishTime": "2026-03-09 14:40",
+    "tags": [
+      "民俗"
+    ],
+    "wordCount": 1124,
+    "summary": "介绍乡村集市、节庆仪式、饮食礼节和交流方式，帮助外地游客更自然地融入乡村活动。",
+    "cover": "cloud://cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845/knowledge/covers/folk-custom.png",
+    "views": 197,
+    "likes": 84,
+    "favorites": 47,
+    "comments": 9,
+    "shareCount": 6,
+    "author": "乡土文化编辑部",
+    "isPinned": false,
+    "content": [
+      {
+        "type": "p",
+        "text": "乡村游真正有意思的，往往不是大景点，而是人与人之间的互动和生活方式。"
+      },
+      {
+        "type": "p",
+        "text": "了解基本礼俗，会让你的体验更舒适，也更受当地欢迎。"
+      }
+    ],
+    "location": null,
+    "commentList": [],
+    "updatedAt": "2026-03-09 14:40"
+  },
+  {
+    "_id": "culture-004",
+    "channel": "culture",
+    "status": "published",
+    "title": "第一次去乡村怎么规划路线：游玩知识速读版",
+    "publishTime": "2026-03-08 11:15",
+    "tags": [
+      "游玩知识"
+    ],
+    "wordCount": 860,
+    "summary": "适合第一次乡村游的用户，快速了解交通、着装、天气、预约、消费和伴手礼避坑要点。",
+    "cover": "cloud://cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845/knowledge/covers/travel-tips.png",
+    "views": 228,
+    "likes": 90,
+    "favorites": 58,
+    "comments": 11,
+    "shareCount": 7,
+    "author": "乡约导览组",
+    "isPinned": false,
+    "content": [
+      {
+        "type": "p",
+        "text": "想让乡村旅行更舒服，行前准备比现场补救更重要。"
+      },
+      {
+        "type": "p",
+        "text": "建议先看天气和路况，再确定穿着、装备和路线安排。"
+      }
+    ],
+    "location": {
+      "name": "承德旅游集散中心",
+      "address": "承德市双桥区迎宾路 18 号",
+      "latitude": 40.9795,
+      "longitude": 117.947
+    },
+    "commentList": [],
+    "updatedAt": "2026-03-08 11:15"
+  }
+]

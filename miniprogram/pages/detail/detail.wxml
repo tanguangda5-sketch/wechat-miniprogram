@@ -1,0 +1,11 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="tip">加载中...</view>
+
+  <view wx:elif="{{!detail}}" class="tip">未找到活动</view>
+
+  <view wx:else class="card">
+    <view class="title">{{detail.title}}</view>
+    <view class="time">发布时间：{{detail.createdAt}}</view>
+    <view class="content">{{detail.content}}</view>
+  </view>
+</view>

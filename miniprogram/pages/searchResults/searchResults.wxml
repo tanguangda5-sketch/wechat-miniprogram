@@ -1,0 +1,70 @@
+<view class="page">
+  <view class="fixedTop" style="padding-top: {{statusBarHeight}}px;">
+    <view class="topbar">
+      <view class="backBtn" bindtap="goBack">
+        <view class="backArrow"></view>
+      </view>
+      <view class="searchBar">
+        <input
+          class="searchInput"
+          value="{{keyword}}"
+          placeholder="{{text.searchPlaceholder}}"
+          placeholder-class="searchPlaceholder"
+          confirm-type="search"
+          bindinput="onKeywordInput"
+          bindconfirm="submitSearch"
+        />
+        <view class="searchBtn" bindtap="submitSearch">{{text.search}}</view>
+      </view>
+    </view>
+
+    <scroll-view class="resultTabs" scroll-x enable-flex>
+      <view
+        wx:for="{{resultTabs}}"
+        wx:key="*this"
+        class="resultTab {{activeResultTab===index ? 'active' : ''}}"
+        data-index="{{index}}"
+        bindtap="changeResultTab"
+      >
+        {{item}}
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="content">
+    <view class="resultList">
+      <view
+        class="resultCard resultCard--{{item.type}}"
+        wx:for="{{visibleResults}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        data-sourceid="{{item.sourceId}}"
+        data-type="{{item.type}}"
+        bindtap="openResultDetail"
+      >
+        <view class="resultImageWrap">
+          <image class="resultImage resultImage--{{item.type}}" src="{{item.cover}}" mode="aspectFill"></image>
+          <view class="resultType resultType--{{item.type}}">
+            {{item.type === 'activity' ? text.typeActivity : item.type === 'scenic' ? text.typeScenic : item.type === 'product' ? text.typeProduct : text.typeHotel}}
+          </view>
+        </view>
+        <view class="resultBody resultBody--{{item.type}}">
+          <view class="resultTitleRow">
+            <view class="resultTitle">{{item.title}}</view>
+          </view>
+          <view class="tagRow">
+            <text class="resultTag" wx:for="{{item.tags}}" wx:key="*this">{{item}}</text>
+          </view>
+          <view class="resultFooter">
+            <text class="resultPrice">{{item.priceText || item.price}}</text>
+            <text class="resultSold" wx:if="{{item.soldText}}">{{item.soldText}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="emptyBlock" wx:if="{{!loading && visibleResults.length === 0}}">
+        {{text.emptyResult}}
+      </view>
+    </view>
+  </view>
+</view>

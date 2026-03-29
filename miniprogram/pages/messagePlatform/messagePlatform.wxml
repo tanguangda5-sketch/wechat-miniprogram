@@ -1,0 +1,11 @@
+<view class="page">
+  <view class="header">平台消息</view>
+  <view class="card support" bindtap="openSupport">
+    <view class="card-title">平台客服</view>
+    <view class="card-desc">咨询账号、规则、订单、售后等平台问题。</view>
+  </view>
+  <view class="card guarantee" bindtap="openGuarantee">
+    <view class="card-title">平台服务保障</view>
+    <view class="card-desc">查看保障卡片、领取保障和申请平台介入。</view>
+  </view>
+</view>

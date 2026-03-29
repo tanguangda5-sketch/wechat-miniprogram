@@ -1,0 +1,174 @@
+<view class="page">
+  <view class="topShell" style="padding-top: {{statusBarHeight}}px;">
+    <view class="navRow">
+      <view class="backBtn" bindtap="onBack"></view>
+
+      <view class="searchBar">
+        <view class="searchIcon"></view>
+        <input
+          class="searchInput"
+          placeholder="城市/区县/住宅区等地点"
+          placeholder-class="searchPlaceholder"
+          value="{{searchKeyword}}"
+          bindinput="onSearchInput"
+        />
+        <view class="clearBtn" wx:if="{{searchKeyword}}" bindtap="onSearchClear">×</view>
+      </view>
+
+      <view class="mapBtn" bindtap="onChooseFromMap">
+        <view class="mapBtnIcon"></view>
+      </view>
+    </view>
+
+    <view class="tabRow">
+      <view class="tabItem {{activeTab === 'myAddress' ? 'active' : ''}}" data-tab="myAddress" bindtap="onTabTap">
+        我的地址
+      </view>
+      <view class="tabItem {{activeTab === 'domesticCity' ? 'active' : ''}}" data-tab="domesticCity" bindtap="onTabTap">
+        国内城市
+      </view>
+    </view>
+  </view>
+
+  <scroll-view
+    class="contentScroll"
+    scroll-y="{{true}}"
+    enhanced="{{true}}"
+    show-scrollbar="{{false}}"
+    scroll-top="{{scrollTop}}"
+    scroll-into-view="{{scrollIntoView}}"
+    bindscroll="onScroll"
+    style="height: {{contentHeight}}px;"
+  >
+    <view wx:if="{{isSearching}}" class="searchPanel">
+      <view class="panelCard">
+        <view class="searchState" wx:if="{{searchLoading}}">正在搜索地点...</view>
+        <view class="searchState" wx:elif="{{searchEmpty}}">没有找到相关地点，试试输入城市、区县或商圈名</view>
+        <view
+          class="searchResultItem"
+          wx:for="{{searchResults}}"
+          wx:key="index"
+          data-index="{{index}}"
+          bindtap="onSelectSearchResult"
+        >
+          <view class="searchResultTitle">{{item.title}}</view>
+          <view class="searchResultSubtitle">{{item.subtitle}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="contentBody">
+      <view id="my-address-anchor" class="anchorHolder"></view>
+
+      <view class="panelCard">
+        <view class="selectedLine">当前选择：{{currentSelectionTitle}}</view>
+
+        <view class="sectionDivider"></view>
+
+        <view class="sectionTitle">当前定位</view>
+        <view class="locationRow">
+          <view class="locationInfo">
+            <view class="locationTitle">{{currentLocationTitle}}</view>
+          </view>
+          <view class="relocateBtn" bindtap="onUseCurrentLocation">
+            <view class="relocateIcon"></view>
+            <text>{{locationAuthorized ? '重新定位' : '开启定位'}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="panelCard">
+        <view class="cardHead">
+          <view class="sectionTitle">收货地址</view>
+        </view>
+        <view class="emptyState">你还没有保存收货地址</view>
+      </view>
+
+      <view class="panelCard" wx:if="{{recentList.length}}">
+        <view class="cardHead">
+          <view class="sectionTitle">最近使用</view>
+          <view class="trashBtn" bindtap="onRecentClearTap">
+            <view class="trashIcon"></view>
+          </view>
+        </view>
+
+        <view
+          class="recentItem"
+          wx:for="{{recentDisplayList}}"
+          wx:key="index"
+          data-index="{{index}}"
+          bindtap="onSelectRecent"
+        >
+          <view class="recentTitle">{{item.displayName}}</view>
+        </view>
+
+        <view
+          class="moreBtn"
+          wx:if="{{recentList.length > 3}}"
+          bindtap="onRecentToggle"
+        >
+          {{recentExpanded ? '收起' : '展开更多'}}
+        </view>
+      </view>
+
+      <view id="domestic-city-anchor" class="anchorHolder"></view>
+
+      <view class="panelCard">
+        <view class="sectionTitle">推荐城市</view>
+        <view class="cityChipGrid">
+          <view
+            class="cityChip {{item.isCurrent ? 'isCurrent' : ''}}"
+            wx:for="{{recommendedCities}}"
+            wx:key="name"
+            data-index="{{index}}"
+            bindtap="onSelectRecommendedCity"
+          >
+            <view class="currentCityMarker" wx:if="{{item.isCurrent}}"></view>
+            <text>{{item.name}}</text>
+          </view>
+        </view>
+
+        <view class="sectionTitle sectionTitleSpaced">城市开头字母</view>
+        <view class="letterGrid">
+          <view
+            class="letterChip"
+            wx:for="{{letterGrid}}"
+            wx:key="*this"
+            data-letter="{{item}}"
+            bindtap="onLetterTap"
+          >
+            {{item}}
+          </view>
+        </view>
+      </view>
+
+      <view
+        class="panelCard cityGroupCard"
+        wx:for="{{cityBuckets}}"
+        wx:key="letter"
+        id="city-group-{{item.letter}}"
+      >
+        <view class="groupLetter">{{item.letter}}</view>
+        <view
+          class="groupCityRow"
+          wx:for="{{item.cities}}"
+          wx:key="*this"
+          data-city="{{item}}"
+          bindtap="onSelectAlphabetCity"
+        >
+          {{item}}
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="dialogMask" wx:if="{{showRecentClearDialog}}" catchtap="onRecentClearCancel">
+    <view class="dialogCard" catchtap="noop">
+      <view class="dialogTitle">确定要清空最近使用记录吗？</view>
+      <view class="dialogActions">
+        <view class="dialogBtn dialogBtnGhost" bindtap="onRecentClearCancel">再想想</view>
+        <view class="dialogBtn dialogBtnPrimary" bindtap="onRecentClearConfirm">清空</view>
+      </view>
+    </view>
+  </view>
+</view>
