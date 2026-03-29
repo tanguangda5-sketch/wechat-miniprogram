@@ -94,15 +94,9 @@ const DISCOVER_KEYWORD_BLACKLIST = new Set([
 
 const ASK_SKILLS = [
   {
-    id: "route",
-    mode: "route_planning",
-    title: "\u8def\u7ebf\u89c4\u5212",
-    icon: "/images/ask-skills/route.png"
-  },
-  {
     id: "guide",
     mode: "guide_customization",
-    title: "\u653b\u7565\u5b9a\u5236",
+    title: "\u884c\u7a0b\u653b\u7565\u5b9a\u5236",
     icon: "/images/ask-skills/guide.png"
   },
   {

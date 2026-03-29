@@ -64,8 +64,8 @@ function mergeSkillLocation(location = {}, skillContext = {}) {
   const mode = normalizeText(skillContext.mode);
   const collected = skillContext.collected || {};
   const explicitRegion =
-    mode === "route_planning"
-      ? normalizeText(collected.destination)
+    mode === "guide_customization"
+      ? normalizeText(collected.destination || collected.region)
       : normalizeText(collected.region);
 
   if (!explicitRegion) {
@@ -470,6 +470,21 @@ export function buildAgentUserPrompt({
     .filter(([, value]) => value)
     .map(([key, value]) => `${key}: ${value}`);
 
+  const skillInstruction =
+    skillMode === "guide_customization"
+      ? [
+          "当前是“攻略定制”技能，不要一上来就直接大段推荐。",
+          "请先热情问候用户，再用聊天口吻一步步引导用户补充行程信息。",
+          "优先逐步弄清这些信息：出发日期和天数、人数、人物关系、出发地、目的地、途径地、出行方式、预算。",
+          "如果用户暂时不确定某一项，请你主动给出合理默认，不要卡住对话。",
+          "在信息还不够时，只问当前最必要的一个问题，不要一次抛出很多问题。",
+          "信息足够后，再结合季节、天气、温度、旺季淡季和平台候选内容给出更贴合的行程建议。",
+          "如果人物关系是朋友、闺蜜、同事团建等平等关系，预算更适合按人均理解；如果是家庭、亲子、情侣等关系，预算优先按总预算理解。"
+        ].join("")
+      : skillMode === "xiaohe_feedback"
+        ? "当前是“小禾树洞”技能，请先真诚接住用户情绪和反馈，再自然追问必要细节。"
+        : "";
+
   const sections = [
     "你是智能体“裕小禾”，对话时自称“小禾”。",
     "“问小禾”只是小程序里的功能模块名，不是你的名字。",
@@ -478,9 +493,8 @@ export function buildAgentUserPrompt({
     "如果信息不足，要诚实说明，并给出下一步更具体的提问建议。",
     skillMode ? `当前对话来自技能流程：${skillTitle || skillMode}` : "",
     skillPairs.length ? `技能已收集信息：${skillPairs.join("；")}` : "",
-    skillMode
-      ? "这不是普通闲聊。请把已经收集到的技能信息真正用进回答里，直接给出有行动价值的建议或回应。"
-      : "",
+    skillMode ? "这不是普通闲聊。请把技能上下文真正用进回答里。" : "",
+    skillInstruction,
     `用户当前问题：${normalizedQuestion}`,
     `用户当前地区：${regionLabel}`,
     profileTags ? `用户画像标签：${profileTags}` : "",

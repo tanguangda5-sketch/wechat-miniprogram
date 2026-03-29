@@ -12,16 +12,15 @@ const DEFAULT_ACTIVITY_COVER = "/images/nav-academy.png"
 const DEFAULT_PRODUCT_COVER = "/images/default-goods-image.png"
 const LOADING_BASE_TEXT = "小禾正在整理合适的内容"
 
+function normalizeSkillMode(skillMode = "") {
+  return skillMode === "route_planning" ? "guide_customization" : skillMode
+}
+
 const SKILL_CONFIG = {
-  route_planning: {
-    badgeName: "路线规划",
-    placeholder: "告诉小禾你的出发地和目的地",
-    intro: "把出发地、途经地或目的地告诉小禾，小禾会先帮你把路线思路整理清楚。"
-  },
   guide_customization: {
     badgeName: "攻略定制",
-    placeholder: "告诉小禾你的出行需求",
-    intro: "把人数、天数、地区和偏好告诉小禾，小禾会一步步帮你整理成更清晰的出行方案。"
+    placeholder: "告诉小禾这次想怎么安排行程",
+    intro: "把这次行程的想法告诉小禾，小禾会像聊天一样一步步帮你梳理出发日期、天数、人数、关系、路线、预算和出行方式。"
   },
   xiaohe_feedback: {
     badgeName: "小禾树洞",
@@ -78,12 +77,8 @@ function buildSkillContext(skillMode = "") {
 }
 
 function buildSkillOpeningQuestion(skillMode = "") {
-  if (skillMode === "route_planning") {
-    return "用户刚进入了“路线规划”技能。请你以小禾的口吻主动开始对话，先问当前最必要的一个问题，帮助用户逐步说清出发地、目的地和出行关注点。不要一次性盘问太多。"
-  }
-
   if (skillMode === "guide_customization") {
-    return "用户刚进入了“攻略定制”技能。请你以小禾的口吻主动开始对话，先问当前最必要的一个问题，帮助用户逐步说清人数、同行类型、天数、地区和预算偏好。不要像表单一样机械追问。"
+    return "用户刚进入了“攻略定制”技能。请你先热情问候，再用自然聊天的语气引导用户逐步补充行程信息。不要一上来就长篇推荐，也不要像表单一样连续盘问。你要优先收集并梳理这些关键信息：出发日期和天数、人数、人物关系、出发地、目的地、途径地、出行方式、预算。如果用户暂时不确定某一项，你要主动给出合理默认并继续推进。等信息足够后，再结合季节、天气、温度、旺季淡季和平台内容给出建议。第一轮只问当前最必要的一个问题。"
   }
 
   if (skillMode === "xiaohe_feedback") {
@@ -319,7 +314,7 @@ Page({
     this.initNavMetrics()
 
     const source = options && options.source ? options.source : "search_input"
-    const skillMode = options && options.skillMode ? options.skillMode : ""
+    const skillMode = normalizeSkillMode(options && options.skillMode ? options.skillMode : "")
     const skillConfig = SKILL_CONFIG[skillMode] || null
     const question = options && options.q ? decodeURIComponent(options.q) : ""
     const conversationId = options && options.conversationId ? decodeURIComponent(options.conversationId) : ""
