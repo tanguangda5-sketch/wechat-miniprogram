@@ -10,27 +10,27 @@ const {
 
 const DEFAULT_ACTIVITY_COVER = "/images/nav-academy.png"
 const DEFAULT_PRODUCT_COVER = "/images/default-goods-image.png"
-const LOADING_BASE_TEXT = "小禾正在整理中"
+const LOADING_BASE_TEXT = "小禾正在整理合适的内容"
 
 const SKILL_CONFIG = {
   route_planning: {
     badgeName: "路线规划",
     placeholder: "告诉小禾你的出发地和目的地",
-    intro: "告诉小禾你的出发地、途径地和目的地，小禾先帮你把路线思路理顺。",
+    intro: "把出发地、途经地或目的地告诉小禾，小禾会先帮你把路线思路整理清楚。",
     firstQuestion: "我们先从出发地开始吧，你准备从哪里出发？",
     quickOptions: []
   },
   guide_customization: {
     badgeName: "攻略定制",
     placeholder: "告诉小禾你的出行需求",
-    intro: "告诉小禾人数、天数、地区和偏好，小禾会一步步帮你整理成更清晰的农旅方案。",
+    intro: "把人数、天数、地区和偏好告诉小禾，小禾会一步步帮你整理成更清晰的出行方案。",
     firstQuestion: "我们先从基础信息开始吧，这次是几个人一起出行？",
     quickOptions: ["1人", "2人", "3-5人", "6人以上"]
   },
   xiaohe_feedback: {
     badgeName: "小禾树洞",
     placeholder: "说说你的想法",
-    intro: "活动、商品、住宿、体验建议都可以告诉小禾，小禾会认真记下来。",
+    intro: "无论是活动、商品、住宿还是体验建议，都可以直接告诉小禾，小禾会认真记下来。",
     firstQuestion: "这次你最想和小禾聊哪一类想法？",
     quickOptions: ["活动建议", "商品建议", "住宿建议", "体验反馈"]
   }
@@ -272,7 +272,7 @@ Page({
     text: {
       brand: "问小禾",
       fallbackQuestion: "附近有哪些适合周末放松的去处？",
-      inputPlaceholder: "发消息，告诉小禾你想去哪玩"
+      inputPlaceholder: "发消息，告诉小禾你想了解什么"
     },
     source: "search_input",
     skillMode: "",
@@ -281,7 +281,7 @@ Page({
     showSkillIntro: false,
     showSkillBadge: false,
     skillBadgeName: "",
-    inputPlaceholder: "发消息，告诉小禾你想去哪玩",
+    inputPlaceholder: "发消息，告诉小禾你想了解什么",
     introText: "",
     quickOptions: [],
     messages: [],
@@ -482,7 +482,7 @@ Page({
           distance: "near"
         }
       })
-      this.appendAiMessage("记下啦，小禾后面会优先往更近一点的方向帮你收。")
+      this.appendAiMessage("记下了。接下来小禾会优先帮你关注更近一些、出行更轻松的选择。")
       return
     }
 
@@ -493,7 +493,7 @@ Page({
           budget: "value"
         }
       })
-      this.appendAiMessage("好呀，小禾后面会更偏向高性价比的推荐。")
+      this.appendAiMessage("收到。接下来小禾会更偏向高性价比、预算更友好的推荐。")
       return
     }
 
@@ -504,7 +504,7 @@ Page({
           detailLevel: "detailed"
         }
       })
-      this.appendAiMessage("可以，小禾后面会尽量说得更具体一些。")
+      this.appendAiMessage("可以。接下来小禾会把建议说得更具体一些，方便你直接判断。")
       return
     }
 
@@ -533,14 +533,14 @@ Page({
     if (this.data.currentStep === "route_origin") {
       formData.origin = value
       this.setData({ formData, currentStep: "route_destination", quickOptions: [] })
-      this.appendAiMessage("记下了。那你这次想去哪里？")
+      this.appendAiMessage("记下了。那这次你想去哪里？")
       return
     }
 
     if (this.data.currentStep === "route_destination") {
       formData.destination = value
       this.setData({ formData, currentStep: "route_done", quickOptions: [] })
-      this.appendAiMessage(`小禾先记下这条路线：从 ${formData.origin} 出发，去 ${formData.destination}。后面接入正式路线能力后，小禾会继续帮你细化。`)
+      this.appendAiMessage(`小禾先记下这条路线：从 ${formData.origin} 出发，前往 ${formData.destination}。后续路线能力完善后，小禾会继续帮你细化行程。`)
     }
   },
 
@@ -558,28 +558,28 @@ Page({
     if (step === "guide_group") {
       formData.groupType = value
       this.setData({ formData, currentStep: "guide_days", quickOptions: ["1天", "2天", "3天"] })
-      this.appendAiMessage("这次准备玩几天？")
+      this.appendAiMessage("这次准备安排几天？")
       return
     }
 
     if (step === "guide_days") {
       formData.days = value
       this.setData({ formData, currentStep: "guide_region", quickOptions: [] })
-      this.appendAiMessage("这次想去哪个地区逛逛？")
+      this.appendAiMessage("这次更想去哪个地区看看？")
       return
     }
 
     if (step === "guide_region") {
       formData.region = value
       this.setData({ formData, currentStep: "guide_budget", quickOptions: ["500元内", "500-1000元", "1000-2000元"] })
-      this.appendAiMessage("大概想把预算控制在什么范围？")
+      this.appendAiMessage("这次大概想把预算控制在什么范围？")
       return
     }
 
     if (step === "guide_budget") {
       formData.budget = value
       this.setData({ formData, currentStep: "guide_done", quickOptions: [] })
-      this.appendAiMessage("这些关键信息小禾先记下来了。后面接入正式攻略定制能力后，小禾会继续帮你整理成完整方案。")
+      this.appendAiMessage("这些关键信息小禾先记下来了。后续攻略定制能力完善后，小禾会继续帮你整理成更完整的方案。")
     }
   },
 
@@ -589,13 +589,13 @@ Page({
     if (this.data.currentStep === "feedback_type") {
       formData.feedbackType = value
       this.setData({ formData, currentStep: "feedback_detail", quickOptions: [] })
-      this.appendAiMessage("可以再和小禾说具体一点吗？小禾会认真记下来。")
+      this.appendAiMessage("可以再和小禾说具体一点吗？这样我会更方便帮你准确记录。")
       return
     }
 
     formData.feedbackText = value
     this.setData({ formData, currentStep: "feedback_done", quickOptions: [] })
-    this.appendAiMessage("谢谢你愿意告诉小禾这些想法，小禾先帮你记下来了。")
+    this.appendAiMessage("谢谢你愿意把这些想法告诉小禾，我已经先帮你认真记下来了。")
   },
 
   appendAiMessage(text, extra = {}) {
@@ -656,12 +656,12 @@ Page({
     if (!question || this.data.isAiLoading) return
 
     if (!yuxiaoheBotId) {
-      this.appendAiMessage("当前还没有配置问小禾的 Agent ID，暂时无法发起智能体对话。")
+      this.appendAiMessage("当前还没有完成问小禾的智能体配置，暂时还不能发起对话。")
       return
     }
 
     if (!wx.cloud || !wx.cloud.extend || !wx.cloud.extend.AI || !wx.cloud.extend.AI.bot) {
-      this.appendAiMessage("当前微信基础库暂不支持智能体对话，请确认小程序基础库版本是否为 3.7.1 及以上。")
+      this.appendAiMessage("当前微信基础库暂不支持问小禾对话，请确认小程序基础库版本为 3.7.1 或以上。")
       return
     }
 
@@ -706,7 +706,7 @@ Page({
       }
 
       this.updateMessageById(aiMessageId, {
-        text: normalizeText(answer) || "小禾这次没有返回内容，你可以换个问法再试试。",
+        text: normalizeText(answer) || "这次小禾没有整理出有效内容，你可以换个问法再试试。",
         recommendations: [],
         tips: "",
         guessQuestions: [],
@@ -715,7 +715,7 @@ Page({
     } catch (error) {
       console.error("[askXiaoheChat] generic failed", error)
       this.updateMessageById(aiMessageId, {
-        text: "小禾这会儿有点忙，你可以换个问法试试，或者稍后再来找小禾。",
+        text: "小禾这会儿有点忙，你可以换个问法试试，或者稍后再来找我。",
         recommendations: [],
         tips: "",
         guessQuestions: [],
@@ -847,10 +847,10 @@ Page({
           sourceId: normalizeText(item._id || item.id),
           type: "activity",
           title: normalizeText(item.title) || "农旅活动",
-          summary: normalizeText(item.summary || item.content || item.detail) || "待补充",
+          summary: normalizeText(item.summary || item.content || item.detail) || "暂时还没有更详细的介绍。",
           gallery: Array.isArray(gallery) ? gallery.filter(Boolean).slice(0, 2) : [],
           tags: coverTagInfo.combinedTags.slice(0, 4),
-          playItems: playItems.length ? playItems : ["活动体验"],
+          playItems: playItems.length ? playItems : ["活动亮点待补充"],
           practicalInfo: getActivityPracticalInfo(item),
           cover: await resolveActivityCover(item)
         }
@@ -858,13 +858,13 @@ Page({
     )
 
     return {
-      introText: recommendations.length ? "小禾结合当前位置和平台真实数据，为你整理了以下农旅活动：" : "",
+      introText: recommendations.length ? "小禾结合你当前的位置和平台内容，为你整理了这些更值得关注的农旅活动：" : "",
       recommendations,
       tips: recommendations.length
         ? [
-            "温馨提示",
+            "小禾提醒你",
             "1. 出行前建议先确认最新开放情况和可体验项目。",
-            "2. 参与亲子户外活动时，请提前做好防晒、防蚊和补水准备。"
+            "2. 参与亲子或户外活动时，记得提前做好防晒、防蚊和补水准备。"
           ].join("\n")
         : ""
     }
@@ -892,23 +892,23 @@ Page({
         sourceId: normalizeText(item._id || item.id),
         type: "scenic",
         title: normalizeText(item.locationName || item.title) || "乡村景点",
-        summary: normalizeText(item.summary || item.content || item.detail) || "待补充",
+        summary: normalizeText(item.summary || item.content || item.detail) || "暂时还没有更详细的介绍。",
         gallery,
         tags: uniqueList(normalizeArray(item.playTags).concat(normalizeArray(item.tags))).slice(0, 4),
-        playItems: playItems.length ? playItems : ["景观漫游"],
+        playItems: playItems.length ? playItems : ["游玩亮点待补充"],
         practicalInfo: getScenicPracticalInfo(item),
         cover
       }
     })
 
     return {
-      introText: recommendations.length ? "小禾结合当前位置和平台真实数据，为你整理了以下值得去的乡村景点：" : "",
+      introText: recommendations.length ? "小禾结合你当前的位置和平台内容，为你整理了这些值得去看看的乡村景点：" : "",
       recommendations,
       tips: recommendations.length
         ? [
-            "温馨提示",
+            "小禾提醒你",
             "1. 出行前建议先确认天气、开放时间和停车条件。",
-            "2. 如果以拍照打卡为主，尽量选择光线更稳定的时段前往。"
+            "2. 如果这次主要是拍照打卡，尽量选择光线更稳定的时段前往。"
           ].join("\n")
         : ""
     }
@@ -933,23 +933,23 @@ Page({
         sourceId: normalizeText(item._id || item.id),
         type: "product",
         title: normalizeText(item.title) || "乡味特产",
-        summary: normalizeText(item.summary || item.content || item.detail) || "待补充",
+        summary: normalizeText(item.summary || item.content || item.detail) || "暂时还没有更详细的介绍。",
         gallery: [cover],
         tags: uniqueList(normalizeArray(item.categoryTags).concat(normalizeArray(item.tags))).slice(0, 4),
-        playItems: playItems.length ? playItems : ["伴手礼盒"],
+        playItems: playItems.length ? playItems : ["选购亮点待补充"],
         practicalInfo: getProductPracticalInfo(item),
         cover
       }
     })
 
     return {
-      introText: recommendations.length ? "小禾结合当前位置和平台真实数据，为你整理了以下值得带走的乡味特产：" : "",
+      introText: recommendations.length ? "小禾结合你当前的位置和平台内容，为你整理了这些值得带走的乡味特产：" : "",
       recommendations,
       tips: recommendations.length
         ? [
-            "温馨提示",
+            "小禾提醒你",
             "1. 送礼或远途携带时，优先选择礼盒、干货或真空包装产品。",
-            "2. 生鲜和现做类商品请留意保质期与便携性。"
+            "2. 生鲜和现做类商品记得留意保质期与便携性。"
           ].join("\n")
         : ""
     }

@@ -363,7 +363,7 @@
 }
 
 .composerSendBtn {
-  min-width: 108rpx;
+  min-width: 132rpx;
   height: 60rpx;
   padding: 0 22rpx;
   border-radius: 24rpx;

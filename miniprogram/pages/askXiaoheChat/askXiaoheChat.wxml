@@ -34,14 +34,14 @@
               </view>
               <view class="recommendationSummary">{{item.summary}}</view>
               <view class="resultSection" wx:if="{{item.playItems && item.playItems.length}}">
-                <view class="resultSectionTitle">核心玩法</view>
+                <view class="resultSectionTitle">值得关注</view>
                 <view class="resultBulletItem" wx:for="{{item.playItems}}" wx:key="*this">
                   <view class="resultBulletDot"></view>
                   <view class="resultBulletText">{{item}}</view>
                 </view>
               </view>
               <view class="resultSection" wx:if="{{item.practicalInfo && item.practicalInfo.length}}">
-                <view class="resultSectionTitle">实用信息</view>
+                <view class="resultSectionTitle">出行参考</view>
                 <view class="resultInfoRow" wx:for="{{item.practicalInfo}}" wx:key="label">
                   <text class="resultInfoLabel">{{item.label}}：</text>
                   <text class="resultInfoValue">{{item.value}}</text>
@@ -55,7 +55,7 @@
         </view>
 
         <view class="guessBlock" wx:if="{{item.role === 'ai' && item.guessQuestions && item.guessQuestions.length}}">
-          <view class="guessTitle">猜你想问</view>
+          <view class="guessTitle">你还可以继续问</view>
           <view class="guessList">
             <view class="guessItem" wx:for="{{item.guessQuestions}}" wx:key="*this" data-question="{{item}}" bindtap="useQuickOption">
               {{item}}
@@ -80,7 +80,7 @@
     <view class="composer">
       <input class="composerInput" value="{{inputValue}}" placeholder="{{inputPlaceholder}}" placeholder-class="composerPlaceholder" confirm-type="send" bindinput="onInputChange" bindconfirm="submitInput" />
       <view class="composerSendBtn" bindtap="submitInput">
-        {{isAiLoading ? '...' : '发送'}}
+        {{isAiLoading ? '整理中' : '发送'}}
       </view>
     </view>
   </view>
