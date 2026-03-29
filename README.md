@@ -74,6 +74,23 @@ npm install
 
 然后基于 `.env.example` 或你自己的本地配置创建 `.env` 文件。`.env` 已被仓库忽略，不会上传。
 
+## 问小禾主线说明
+
+当前“问小禾”的正式主线是：
+
+- 小程序前端入口：[`miniprogram/pages/askXiaohe/askXiaohe.js`](/E:/三创赛/miniprogram/pages/askXiaohe/askXiaohe.js)
+- 正式聊天页：[`miniprogram/pages/askXiaoheChat/askXiaoheChat.js`](/E:/三创赛/miniprogram/pages/askXiaoheChat/askXiaoheChat.js)
+- Agent 配置：[`miniprogram/config/agent.js`](/E:/三创赛/miniprogram/config/agent.js)
+- 云端 Agent 服务：[`cloudfunctions/agent-yuxiaohe-1grmumm967563411`](/E:/三创赛/cloudfunctions/agent-yuxiaohe-1grmumm967563411)
+- 本地开发版 Agent：[`agent-yuxiaohe-local/`](/E:/三创赛/agent-yuxiaohe-local)
+
+当前仓库中，`agent-yuxiaohe-1grmumm967563411` 是“裕小禾”的唯一正式主线实现。
+
+以下云函数目前视为旧方案或过渡方案，不再作为正式主实现继续扩展：
+
+- [`cloudfunctions/yuxiaoheAgent`](/E:/三创赛/cloudfunctions/yuxiaoheAgent)
+- [`cloudfunctions/xiaoheChat`](/E:/三创赛/cloudfunctions/xiaoheChat)
+
 ## 云函数说明
 
 常用云函数目录位于 [`cloudfunctions/`](/E:/三创赛/cloudfunctions)：
@@ -83,7 +100,8 @@ npm install
 - `getknowledgearticles` / `getknowledgearticledetail`：知识内容查询
 - `activityOrder`：活动报名与订单流程
 - `userManage`：用户管理
-- `xiaoheChat` / `yuxiaoheAgent`：对应“问小禾”能力，其中智能体正式名称为“裕小禾”
+- `agent-yuxiaohe-1grmumm967563411`：裕小禾正式 Agent 服务主线
+- `yuxiaoheAgent` / `xiaoheChat`：历史或过渡方案，后续应避免继续扩展
 
 部分云函数依赖第三方服务或云环境配置，部署前请先核对环境变量与账号权限。
 

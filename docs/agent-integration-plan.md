@@ -45,6 +45,23 @@
 3. 保留现有农文旅业务语境，统一成 `裕小禾 / 小禾 / 问小禾` 命名体系
 4. 输出风格保持自然、温和、有陪伴感，避免客服化表达
 
+## 3.1 当前主线确认
+
+截至当前仓库状态，正式主线已经明确为：
+
+- 前端入口：[`miniprogram/pages/askXiaohe/askXiaohe.js`](/E:/三创赛/miniprogram/pages/askXiaohe/askXiaohe.js)
+- 聊天页：[`miniprogram/pages/askXiaoheChat/askXiaoheChat.js`](/E:/三创赛/miniprogram/pages/askXiaoheChat/askXiaoheChat.js)
+- Agent 配置：[`miniprogram/config/agent.js`](/E:/三创赛/miniprogram/config/agent.js)
+- 云端正式实现：[`cloudfunctions/agent-yuxiaohe-1grmumm967563411`](/E:/三创赛/cloudfunctions/agent-yuxiaohe-1grmumm967563411)
+- 本地开发版：[`agent-yuxiaohe-local`](/E:/三创赛/agent-yuxiaohe-local)
+
+当前不再将以下云函数视为“问小禾”的正式主实现：
+
+- [`cloudfunctions/yuxiaoheAgent`](/E:/三创赛/cloudfunctions/yuxiaoheAgent)
+- [`cloudfunctions/xiaoheChat`](/E:/三创赛/cloudfunctions/xiaoheChat)
+
+它们可作为历史方案、迁移参考或过渡实现保留，但后续不应继续作为主线扩展。
+
 ## 4. Agent 基础设定
 
 ### 4.1 Agent 名称
