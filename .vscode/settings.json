@@ -1,4 +1,8 @@
 {
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "files.encoding": "utf8",
+  "files.autoGuessEncoding": true,
   "files.watcherExclude": {
     "**/.git/objects/**": true,
     "**/.git/subtree-cache/**": true,
@@ -14,5 +18,13 @@
   "files.exclude": {
     "**/.DS_Store": true,
     "**/Thumbs.db": true
+  },
+  "files.associations": {
+    "*.wxml": "html",
+    "*.wxss": "css",
+    "*.wxs": "javascript"
+  },
+  "emmet.includeLanguages": {
+    "wxml": "html"
   }
 }
