@@ -96,7 +96,7 @@ const ASK_SKILLS = [
   {
     id: "guide",
     mode: "guide_customization",
-    title: "\u884c\u7a0b\u653b\u7565\u5b9a\u5236",
+    title: "\u653b\u7565\u5b9a\u5236",
     icon: "/images/ask-skills/guide.png"
   },
   {
