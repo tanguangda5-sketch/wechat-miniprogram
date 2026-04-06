@@ -70,7 +70,11 @@ function saveConversation(conversation) {
       firstQuestion: normalizeText(conversation.firstQuestion),
       createdAt: conversation.createdAt || Date.now(),
       updatedAt: conversation.updatedAt || Date.now(),
-      messages: Array.isArray(conversation.messages) ? conversation.messages : []
+      messages: Array.isArray(conversation.messages) ? conversation.messages : [],
+      source: normalizeText(conversation.source),
+      skillMode: normalizeText(conversation.skillMode),
+      genericPreferences: conversation.genericPreferences || {},
+      currentTaskState: conversation.currentTaskState || null
     }
   ].concat(current).slice(0, MAX_CONVERSATIONS)
 

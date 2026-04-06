@@ -13,7 +13,10 @@ import {
 import {
   DetectCloudbaseUserMiddleware,
   buildAgentUserPrompt,
+  buildBuddyMatchResult,
+  buildGuideCustomizationResult,
   buildPlatformGroundingContext,
+  buildConversationWorkflow,
 } from "./utils.js";
 import { buildDirectAnswer } from "./direct-answer.js";
 
@@ -219,7 +222,7 @@ function normalizeBotHistory(history = []) {
     .filter(Boolean);
 }
 
-async function buildAgentInputFromBotBody(body = {}) {
+async function buildAgentInputFromBotBody(body = {}, cloudbaseUserId = "") {
   const historyMessages = normalizeBotHistory(body?.history);
   const msg = String(body?.msg || "").trim();
 
@@ -230,9 +233,15 @@ async function buildAgentInputFromBotBody(body = {}) {
   const groundingContext = await buildPlatformGroundingContext(
     body?.contextPayload || {}
   );
+  const workflowContext = await buildConversationWorkflow({
+    question: msg,
+    contextPayload: body?.contextPayload || {},
+    cloudbaseUserId,
+  });
   const groundedMessageContent = buildAgentUserPrompt({
     question: msg,
     groundingContext,
+    workflowContext,
     contextPayload: body?.contextPayload || {},
   });
 
@@ -251,6 +260,7 @@ async function buildAgentInputFromBotBody(body = {}) {
     forwardedProps: {
       groundingRegion: groundingContext?.regionLabel || "",
       groundingCandidateCount: groundingContext?.candidates?.length || 0,
+      mainline: workflowContext?.mainline || "",
     },
   };
 }
@@ -282,9 +292,11 @@ async function handleBotSendMessage(req, res) {
   let chunkCount = 0;
 
   try {
+    const cloudbaseUserId = extractCloudbaseUserId(req);
     const directAnswer = await buildDirectAnswer({
       question: req.body?.msg || "",
       contextPayload: req.body?.contextPayload || {},
+      cloudbaseUserId,
     });
 
     if (directAnswer) {
@@ -296,8 +308,7 @@ async function handleBotSendMessage(req, res) {
       return;
     }
 
-    const input = await buildAgentInputFromBotBody(req.body || {});
-    const cloudbaseUserId = extractCloudbaseUserId(req);
+    const input = await buildAgentInputFromBotBody(req.body || {}, cloudbaseUserId);
     input.forwardedProps = {
       ...(input.forwardedProps || {}),
       cloudbaseUserId,
@@ -370,6 +381,59 @@ async function handleBotSendMessage(req, res) {
   }
 }
 
+async function handleBuddyMatch(req, res) {
+  try {
+    const body = req.body || {};
+    const departure = String(body.departure || "").trim();
+    const destination = String(body.destination || "").trim();
+    const time = String(body.time || "").trim();
+    const companionPreference = String(body.companionPreference || "").trim();
+    const cloudbaseUserId =
+      String(body.cloudbaseUserId || "").trim() || extractCloudbaseUserId(req);
+
+    const result = await buildBuddyMatchResult({
+      departure,
+      destination,
+      time,
+      companionPreference,
+      cloudbaseUserId,
+      contextPayload: body.contextPayload || {},
+    });
+
+    res.json(result);
+  } catch (error) {
+    console.error("[agent-yuxiaohe] buddy-match failed", error);
+    res.status(500).json({
+      success: false,
+      message: "搭子匹配服务暂不可用",
+      error: error?.message || String(error),
+    });
+  }
+}
+
+async function handleGuideCustomization(req, res) {
+  try {
+    const body = req.body || {};
+    const result = await buildGuideCustomizationResult({
+      time: String(body.time || "").trim(),
+      peopleCount: String(body.peopleCount || "").trim(),
+      relationship: String(body.relationship || "").trim(),
+      budget: String(body.budget || "").trim(),
+      destination: String(body.destination || "").trim(),
+      contextPayload: body.contextPayload || {},
+    });
+
+    res.json(result);
+  } catch (error) {
+    console.error("[agent-yuxiaohe] guide-customization failed", error);
+    res.status(500).json({
+      success: false,
+      message: "攻略候选服务暂时不可用",
+      error: error?.message || String(error),
+    });
+  }
+}
+
 const app = express();
 
 app.use((req, res, next) => {
@@ -381,6 +445,10 @@ app.use((req, res, next) => {
 });
 
 app.post("/send-message", express.json(), handleBotSendMessage);
+
+app.post("/api/buddy-match", express.json(), handleBuddyMatch);
+
+app.post("/api/guide-customization", express.json(), handleGuideCustomization);
 
 app.post(
   "/v1/aibot/bots/:agentId/send-message",

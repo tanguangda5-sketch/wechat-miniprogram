@@ -1,6 +1,8 @@
 import https from "https";
 import {
-  buildPlatformGroundingContext,
+  MAINLINE,
+  buildConversationWorkflow,
+  detectMainline,
   normalizeText,
 } from "./utils.js";
 
@@ -13,8 +15,6 @@ const WEATHER_KEYWORDS = [
   "雨吗",
   "冷不冷",
   "热不热",
-  "刮风",
-  "风大",
   "穿什么",
   "穿啥",
   "天气预报",
@@ -23,17 +23,10 @@ const WEATHER_KEYWORDS = [
 const LOCATION_KEYWORDS = [
   "我在哪",
   "我现在在哪",
-  "我现在在哪里",
   "当前位置",
-  "你知道我在哪",
-  "知道我现在在哪",
-  "我在什么地方",
-  "我在哪儿",
+  "定位",
+  "我的位置",
 ];
-
-function normalizeArray(value) {
-  return Array.isArray(value) ? value.filter(Boolean) : [];
-}
 
 function requestJson(url) {
   return new Promise((resolve, reject) => {
@@ -62,20 +55,10 @@ function formatNumber(value) {
 
 function routeIntent(question) {
   const text = normalizeText(question);
-
-  if (!text) {
-    return { intent: "empty" };
-  }
-
-  if (WEATHER_KEYWORDS.some((keyword) => text.includes(keyword))) {
-    return { intent: "weather" };
-  }
-
-  if (LOCATION_KEYWORDS.some((keyword) => text.includes(keyword))) {
-    return { intent: "where_am_i" };
-  }
-
-  return { intent: "agent" };
+  if (!text) return { intent: "empty" };
+  if (WEATHER_KEYWORDS.some((keyword) => text.includes(keyword))) return { intent: "weather" };
+  if (LOCATION_KEYWORDS.some((keyword) => text.includes(keyword))) return { intent: "where_am_i" };
+  return { intent: "other" };
 }
 
 function stripWeatherTerms(question = "") {
@@ -91,19 +74,14 @@ function detectExplicitPlace(question = "") {
   if (!cleaned) return "";
 
   const exactAdminMatch = cleaned.match(/([\u4e00-\u9fa5]{2,12}(?:省|市|州|县|区))/u);
-  if (exactAdminMatch && exactAdminMatch[1]) {
-    return exactAdminMatch[1];
-  }
+  if (exactAdminMatch?.[1]) return exactAdminMatch[1];
 
-  const firstPhrase = cleaned.split(/[,\uFF0C\u3002\uFF1F?!()\s]/u).find(Boolean);
-  return normalizeText(firstPhrase);
+  return cleaned.split(/[,\uFF0C\u3002\uFF1F?!()\s]/u).find(Boolean) || "";
 }
 
 async function placeSuggestion(keyword, region = "") {
   const apiKey = process.env.TENCENT_MAP_KEY || process.env.TENCENT_MAP_API_KEY || "";
-  if (!apiKey || !keyword) {
-    return [];
-  }
+  if (!apiKey || !keyword) return [];
 
   const params = new URLSearchParams({
     key: apiKey,
@@ -112,42 +90,35 @@ async function placeSuggestion(keyword, region = "") {
     region_fix: "0",
     page_size: "10",
   });
+
   const url = `https://apis.map.qq.com/ws/place/v1/suggestion?${params.toString()}`;
   const result = await requestJson(url);
-  if (result?.status !== 0 || !Array.isArray(result?.data)) {
-    return [];
-  }
+  if (result?.status !== 0 || !Array.isArray(result?.data)) return [];
 
   return result.data.map((item) => ({
     title: item.title || "",
-    id: item.id || "",
     adcode: item.adcode || "",
     province: item.province || "",
     city: item.city || "",
     district: item.district || "",
     latitude: item.location?.lat || "",
     longitude: item.location?.lng || "",
-    address: item.address || "",
-    type: item.type || 0,
   }));
 }
 
 async function reverseGeocoder({ latitude, longitude }) {
   const apiKey = process.env.TENCENT_MAP_KEY || process.env.TENCENT_MAP_API_KEY || "";
-  if (!apiKey || !latitude || !longitude) {
-    return null;
-  }
+  if (!apiKey || !latitude || !longitude) return null;
 
   const params = new URLSearchParams({
     key: apiKey,
     location: `${latitude},${longitude}`,
     get_poi: "0",
   });
+
   const url = `https://apis.map.qq.com/ws/geocoder/v1/?${params.toString()}`;
   const result = await requestJson(url);
-  if (result?.status !== 0 || !result?.result) {
-    return null;
-  }
+  if (result?.status !== 0 || !result?.result) return null;
 
   const component = result.result.address_component || {};
   const location = result.result.location || {};
@@ -166,15 +137,11 @@ async function reverseGeocoder({ latitude, longitude }) {
 
 async function ipLocation() {
   const apiKey = process.env.TENCENT_MAP_KEY || process.env.TENCENT_MAP_API_KEY || "";
-  if (!apiKey) {
-    return null;
-  }
+  if (!apiKey) return null;
 
   const url = `https://apis.map.qq.com/ws/location/v1/ip?key=${encodeURIComponent(apiKey)}`;
   const result = await requestJson(url);
-  if (result?.status !== 0 || !result?.result) {
-    return null;
-  }
+  if (result?.status !== 0 || !result?.result) return null;
 
   const adInfo = result.result.ad_info || {};
   const location = result.result.location || {};
@@ -201,7 +168,6 @@ async function resolveLocation(contextPayload = {}, question = "") {
     if (suggestion.length) {
       const picked = suggestion[0];
       return {
-        explicitPlace,
         label: [picked.province, picked.city, picked.district].filter(Boolean).join("") || picked.title,
         province: picked.province,
         city: picked.city,
@@ -220,7 +186,6 @@ async function resolveLocation(contextPayload = {}, question = "") {
     });
     if (reversed) {
       return {
-        explicitPlace,
         label: [reversed.province, reversed.city, reversed.district].filter(Boolean).join("") || reversed.locationText,
         province: reversed.province,
         city: reversed.city,
@@ -238,7 +203,6 @@ async function resolveLocation(contextPayload = {}, question = "") {
     if (suggestion.length) {
       const picked = suggestion[0];
       return {
-        explicitPlace,
         label: [picked.province, picked.city, picked.district].filter(Boolean).join("") || picked.title,
         province: picked.province,
         city: picked.city,
@@ -253,7 +217,6 @@ async function resolveLocation(contextPayload = {}, question = "") {
   const ipResolved = await ipLocation();
   if (ipResolved) {
     return {
-      explicitPlace,
       label: [ipResolved.province, ipResolved.city, ipResolved.district].filter(Boolean).join("") || ipResolved.locationText,
       province: ipResolved.province,
       city: ipResolved.city,
@@ -330,9 +293,9 @@ function buildWeatherAnswer(locationLabel, weatherData) {
     if (Number.isFinite(rainNumber) && rainNumber >= 60) {
       parts.push(`今天降水概率较高，大约 ${rainProb}% ，建议带伞。`);
     } else if (Number.isFinite(rainNumber) && rainNumber >= 30) {
-      parts.push(`今天有一定降水概率，大约 ${rainProb}% ，出门前可以留意一下天气变化。`);
+      parts.push(`今天有一定降水概率，大约 ${rainProb}% ，出门前可以留意天气变化。`);
     } else {
-      parts.push(`今天降水概率不高，大约 ${rainProb}% 。`);
+      parts.push(`今天降水概率不高，大约 ${rainProb}%。`);
     }
   }
 
@@ -350,91 +313,29 @@ function buildWeatherAnswer(locationLabel, weatherData) {
   return parts.join("");
 }
 
-function pickWeatherFriendlyCandidates(candidates, weatherAnswer) {
-  const answer = normalizeText(weatherAnswer);
-  const isRainy = /(下雨|小雨|中雨|大雨|降水|阵雨)/.test(answer);
-  const isCold = /(气温偏低|当前约\s*\d+°C|体感约\s*\d+°C)/.test(answer) && /-?\d+°C/.test(answer);
-  const isSunny = /(晴|大体晴朗)/.test(answer);
-
-  return normalizeArray(candidates)
-    .map((candidate) => {
-      const haystack = [
-        normalizeText(candidate.title),
-        normalizeText(candidate.summary),
-        normalizeArray(candidate.tags).join(" "),
-      ].join(" ");
-
-      let score = 0;
-      if (isRainy) {
-        if (/(手作|民宿|古镇|室内|慢游|体验|美食|摄影)/.test(haystack)) score += 4;
-        if (/(徒步|采摘|草原|露营)/.test(haystack)) score -= 3;
-      }
-      if (isCold) {
-        if (/(民宿|手作|古镇|体验|美食)/.test(haystack)) score += 3;
-        if (/(草莓|采摘|徒步|草原|摄影)/.test(haystack)) score -= 1;
-      }
-      if (isSunny) {
-        if (/(采摘|摄影|徒步|草原|田园|观景)/.test(haystack)) score += 3;
-      }
-
-      return { candidate, score };
-    })
-    .sort((a, b) => b.score - a.score)
-    .map((item) => item.candidate)
-    .slice(0, 3);
-}
-
-function buildWeatherRecommendationText(candidates = []) {
-  if (!candidates.length) {
-    return "";
-  }
-
-  const names = candidates.map((item) => item.title).filter(Boolean).slice(0, 3);
-  if (!names.length) {
-    return "";
-  }
-
-  const leadText = names.length === 1 ? names[0] : `${names.slice(0, -1).join("、")} 和 ${names[names.length - 1]}`;
-  const first = candidates[0];
-  const summary = normalizeText(first?.summary);
-  return `结合现在这个天气，小禾会优先建议你看看 ${leadText}。${summary ? `${first.title} 比较适合，${summary}` : "它们会比纯户外暴晒或受天气影响较大的安排更稳妥一些。"}`
-}
-
 async function buildWeatherDirectResponse(question, contextPayload = {}) {
   const resolved = await resolveLocation(contextPayload, question);
   if (!resolved) {
-    return "小禾这会儿还没法准确判断你想查哪个地方的天气。你可以直接说“兰州今天天气怎么样”，或者先开启定位，小禾就能查得更准一些。";
+    return "实时天气暂不可用，因为我还没能准确识别你要查询的地区。你可以直接说城市名，比如“兰州今天天气怎么样”。";
   }
 
   if (!resolved.latitude || !resolved.longitude) {
-    return `小禾已经识别到你想问的大概地区是 ${resolved.label || "目标地区"}，但目前还没拿到可用的天气坐标信息。你可以换一个更具体的区县名再试一次。`;
+    return `我已经识别到你想问的大概地区是${resolved.label || "目标地区"}，但位置坐标还没拿到，所以实时天气暂不可用。你可以换一个更具体的区县名再试一次。`;
   }
 
-  const weatherData = await fetchOpenMeteoWeather(resolved.latitude, resolved.longitude);
-  const locationLabel = normalizeText(resolved.label) || "你当前所在地区";
-  const weatherAnswer = buildWeatherAnswer(locationLabel, weatherData);
-  const groundingContext = await buildPlatformGroundingContext({
-    ...contextPayload,
-    question,
-    location: {
-      ...(contextPayload.location || {}),
-      province: resolved.province || contextPayload.location?.province || "",
-      city: resolved.city || contextPayload.location?.city || "",
-      district: resolved.district || contextPayload.location?.district || "",
-      latitude: resolved.latitude || contextPayload.location?.latitude || "",
-      longitude: resolved.longitude || contextPayload.location?.longitude || "",
-    },
-  });
-  const weatherFriendly = pickWeatherFriendlyCandidates(groundingContext.candidates, weatherAnswer);
-  const recommendationText = buildWeatherRecommendationText(weatherFriendly);
-
-  return recommendationText ? `${weatherAnswer} ${recommendationText}` : weatherAnswer;
+  try {
+    const weatherData = await fetchOpenMeteoWeather(resolved.latitude, resolved.longitude);
+    const locationLabel = normalizeText(resolved.label) || "你当前所在地区";
+    return buildWeatherAnswer(locationLabel, weatherData);
+  } catch (error) {
+    return "实时天气暂不可用，刚才查询天气服务时失败了。你可以稍后再试。";
+  }
 }
 
 async function buildWhereAmIDirectResponse(contextPayload = {}) {
   const resolved = await resolveLocation(contextPayload, "");
   if (!resolved) {
-    return "小禾这会儿还没拿到你的定位信息。你可以先开启定位权限，或者直接告诉我你所在的城市，小禾就能继续帮你看附近内容。";
+    return "位置未获取成功。你可以先开启定位权限，或者直接告诉我你所在的城市。";
   }
 
   const label =
@@ -442,18 +343,72 @@ async function buildWhereAmIDirectResponse(contextPayload = {}) {
     [resolved.province, resolved.city, resolved.district].filter(Boolean).join("") ||
     "你当前所在地区";
 
-  return `小禾目前判断你大概在 ${label}。如果你愿意，我可以继续按这个位置帮你看附近活动、景点、民宿，或者顺便查一下天气。`;
+  return `我目前判断你大概在${label}。如果你想，我也可以继续帮你查这个地区的实时天气。`;
 }
 
-export async function buildDirectAnswer({ question = "", contextPayload = {} } = {}) {
-  const route = routeIntent(question);
+function buildBuddyMissingFieldResponse(workflow = {}) {
+  return workflow?.missingField?.ask || "我先帮你把这次找搭子的信息收清楚，你更想找什么样的同行搭子？";
+}
 
+function buildBuddyNoCandidateResponse() {
+  return "当前没有合适候选。你可以补充一下时间、出发地或同行偏好，我再继续帮你缩小范围。";
+}
+
+function buildGuideMissingFieldResponse(workflow = {}) {
+  return workflow?.missingField?.ask || "我先帮你把这次攻略信息收清楚，你打算什么时候去？";
+}
+
+function buildFeedbackDirectResponse(workflow = {}) {
+  const feedbackType = workflow?.feedbackType || "产品反馈";
+  if (feedbackType === "情绪倾诉") {
+    return "我接住你现在这份情绪。你愿意的话，可以再告诉我刚刚最让你难受的点是什么，我会认真听。";
+  }
+
+  if (feedbackType === "平台建议") {
+    return "这条建议我记下了。你要是愿意，可以再补一句你最希望它先改哪一处，我好把重点收得更准。";
+  }
+
+  return "我收到你的反馈了。要是你愿意，可以再补一点具体场景或步骤，这样我能更准确地整理问题。";
+}
+
+export async function buildDirectAnswer({
+  question = "",
+  contextPayload = {},
+  cloudbaseUserId = "",
+} = {}) {
+  const route = routeIntent(question);
   if (route.intent === "weather") {
     return buildWeatherDirectResponse(question, contextPayload);
   }
-
   if (route.intent === "where_am_i") {
     return buildWhereAmIDirectResponse(contextPayload);
+  }
+
+  const mainline = detectMainline(question, contextPayload);
+  const workflow = await buildConversationWorkflow({
+    question,
+    contextPayload,
+    cloudbaseUserId,
+  });
+
+  if (mainline === MAINLINE.BUDDY) {
+    if (!workflow.isReady) {
+      return buildBuddyMissingFieldResponse(workflow);
+    }
+
+    if (!workflow.buddyCandidates?.length) {
+      return buildBuddyNoCandidateResponse();
+    }
+
+    return "";
+  }
+
+  if (mainline === MAINLINE.GUIDE && !workflow.isReady) {
+    return buildGuideMissingFieldResponse(workflow);
+  }
+
+  if (mainline === MAINLINE.FEEDBACK && normalizeText(question).length <= 18) {
+    return buildFeedbackDirectResponse(workflow);
   }
 
   return "";

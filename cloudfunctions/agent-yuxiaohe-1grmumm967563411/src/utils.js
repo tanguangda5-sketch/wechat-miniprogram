@@ -1,10 +1,57 @@
 import { jwtDecode } from "jwt-decode";
 import tcb from "@cloudbase/node-sdk";
 
-const LOCATION_WORD_REGEXP = /(附近|周边|本地|同城|这里|这边|当前位置|现在)/;
+const LOCATION_WORD_REGEXP = /(附近|周边|本地|同城|这里|这边|当前位置|现在)/u;
 const DEFAULT_REGION_LABEL = "未提供地区";
 const MAX_DATASET_FETCH = 60;
 const MAX_CANDIDATE_PER_TYPE = 3;
+const BUDDY_MAX_CANDIDATES = 3;
+const GUIDE_MAX_CANDIDATES = 6;
+
+export const MAINLINE = {
+  BUDDY: "buddy_matching",
+  GUIDE: "guide_customization",
+  WEATHER: "weather_location",
+  FEEDBACK: "xiaohe_feedback",
+  GENERIC: "generic_guard",
+};
+
+const MAINLINE_SKILL_MODE_MAP = {
+  buddy_matching: MAINLINE.BUDDY,
+  guide_customization: MAINLINE.GUIDE,
+  xiaohe_feedback: MAINLINE.FEEDBACK,
+};
+
+const BUDDY_KEYWORDS = ["搭子", "同行", "一起去", "找人一起", "结伴", "拼玩", "拼车"];
+const GUIDE_KEYWORDS = ["攻略", "路线", "行程", "怎么玩", "安排", "推荐路线", "定制", "规划"];
+const WEATHER_KEYWORDS = [
+  "天气",
+  "气温",
+  "温度",
+  "下雨",
+  "降雨",
+  "穿什么",
+  "穿啥",
+  "位置",
+  "定位",
+  "我在哪",
+  "附近天气",
+];
+const FEEDBACK_KEYWORDS = [
+  "吐槽",
+  "反馈",
+  "建议",
+  "意见",
+  "抱怨",
+  "难用",
+  "卡顿",
+  "bug",
+  "心情",
+  "烦",
+  "难受",
+  "委屈",
+  "emo",
+];
 
 let cloudbaseApp = null;
 
@@ -26,9 +73,13 @@ function uniqueList(list = []) {
   return Array.from(new Set((list || []).filter(Boolean)));
 }
 
+function includesAny(text = "", keywords = []) {
+  return keywords.some((keyword) => text.includes(keyword));
+}
+
 function removeRegionSuffix(value) {
   return normalizeText(value)
-    .replace(/(特别行政区|自治区|自治州|地区|盟)$/u, "")
+    .replace(/(特别行政区|自治区|自治州|地区)$/u, "")
     .replace(/(省|市|区|县|旗)$/u, "");
 }
 
@@ -60,11 +111,34 @@ function buildRegionLabel(location = {}) {
   return region || normalizeText(location.locationText) || DEFAULT_REGION_LABEL;
 }
 
-function mergeSkillLocation(location = {}, skillContext = {}) {
-  const mode = normalizeText(skillContext.mode);
-  const collected = skillContext.collected || {};
+function getCurrentTaskState(contextPayload = {}) {
+  return contextPayload?.currentTaskState || {};
+}
+
+function getMergedCollected(contextPayload = {}) {
+  const skillCollected = contextPayload?.skillContext?.collected || {};
+  const taskCollected = getCurrentTaskState(contextPayload)?.collected || {};
+
+  return {
+    ...skillCollected,
+    ...taskCollected,
+  };
+}
+
+function readStateValue(contextPayload = {}, keys = []) {
+  const collected = getMergedCollected(contextPayload);
+  for (const key of keys) {
+    const value = normalizeText(collected?.[key]);
+    if (value) return value;
+  }
+  return "";
+}
+
+function mergeSkillLocation(location = {}, contextPayload = {}) {
+  const skillMode = normalizeText(contextPayload?.skillContext?.mode);
+  const collected = getMergedCollected(contextPayload);
   const explicitRegion =
-    mode === "guide_customization"
+    skillMode === MAINLINE.GUIDE
       ? normalizeText(collected.destination || collected.region)
       : normalizeText(collected.region);
 
@@ -89,8 +163,7 @@ function getPriceText(item = {}, type = "activity") {
   if (!price) {
     return type === "hotel" ? "价格待定" : "可咨询";
   }
-
-  return type === "hotel" ? `￥${price}/晚` : `￥${price}起`;
+  return type === "hotel" ? `¥${price}/晚` : `¥${price}起`;
 }
 
 function getItemRegionText(item = {}) {
@@ -132,7 +205,6 @@ function joinSearchText(item = {}) {
 function buildIntentTokens(question = "", userProfile = {}) {
   const source = normalizeText(question);
   const tokens = [];
-
   const keywordMap = [
     "亲子",
     "农旅",
@@ -170,16 +242,16 @@ function detectRequestedTypes(question = "") {
   const text = normalizeText(question);
   const requested = [];
 
-  if (/活动|采摘|研学|体验|农旅|亲子|周末|玩/.test(text)) {
+  if (/活动|采摘|研学|体验|农旅|亲子|周末|玩/u.test(text)) {
     requested.push("activity");
   }
-  if (/景|观光|古村|花海|打卡|拍照/.test(text)) {
+  if (/景点|观光|古村|花海|打卡|拍照/u.test(text)) {
     requested.push("scenic");
   }
-  if (/民宿|酒店|住宿|住/.test(text)) {
+  if (/民宿|酒店|住宿|住/u.test(text)) {
     requested.push("hotel");
   }
-  if (/特产|商品|礼盒|伴手礼|买/.test(text)) {
+  if (/特产|商品|礼盒|伴手礼/u.test(text)) {
     requested.push("product");
   }
 
@@ -187,55 +259,43 @@ function detectRequestedTypes(question = "") {
 }
 
 function scoreLocation(item = {}, regionTokens = []) {
-  if (!regionTokens.length) {
-    return 0;
-  }
+  if (!regionTokens.length) return 0;
 
   const text = joinSearchText(item);
   let score = 0;
-
   regionTokens.forEach((token, index) => {
     if (token && text.includes(normalizeTextLower(token))) {
       score += 15 - Math.min(index * 2, 8);
     }
   });
-
   return score;
 }
 
 function scoreIntent(item = {}, intentTokens = []) {
-  if (!intentTokens.length) {
-    return 0;
-  }
+  if (!intentTokens.length) return 0;
 
   const text = joinSearchText(item);
   return intentTokens.reduce((score, token) => {
-    if (!token) {
-      return score;
-    }
+    if (!token) return score;
     return score + (text.includes(normalizeTextLower(token)) ? 8 : 0);
   }, 0);
 }
 
 function scoreNearbyIntent(question = "", item = {}, location = {}) {
-  if (!LOCATION_WORD_REGEXP.test(question)) {
-    return 0;
-  }
+  if (!LOCATION_WORD_REGEXP.test(question)) return 0;
 
   const regionText = buildRegionLabel(location);
-  const itemRegion = getItemRegionText(item) || normalizeText(item.locationName) || normalizeText(item.address);
-  return itemRegion && regionText !== DEFAULT_REGION_LABEL && itemRegion.includes(removeRegionSuffix(regionText)) ? 10 : 0;
+  const itemRegion =
+    getItemRegionText(item) || normalizeText(item.locationName) || normalizeText(item.address);
+
+  return itemRegion && regionText !== DEFAULT_REGION_LABEL && itemRegion.includes(removeRegionSuffix(regionText))
+    ? 10
+    : 0;
 }
 
 function scoreSourceType(type, requestedTypes = []) {
-  if (!requestedTypes.length) {
-    return 0;
-  }
-
-  if (requestedTypes[0] === type) {
-    return 20;
-  }
-
+  if (!requestedTypes.length) return 0;
+  if (requestedTypes[0] === type) return 20;
   return requestedTypes.includes(type) ? 10 : -10;
 }
 
@@ -251,31 +311,31 @@ function sortByScore(list = []) {
 
 function summarizeItem(type, item = {}) {
   const title = normalizeText(
-    item.title || item.name || item.locationName || {
-      activity: "农旅活动",
-      scenic: "乡村景点",
-      hotel: "乡野民宿",
-      product: "乡味商品",
-    }[type]
+    item.title ||
+      item.name ||
+      item.locationName ||
+      {
+        activity: "农旅活动",
+        scenic: "乡村景点",
+        hotel: "乡野民宿",
+        product: "乡味商品",
+      }[type]
   );
-  const region = getItemRegionText(item) || normalizeText(item.locationName) || normalizeText(item.address) || "地区待补充";
-  const summary = normalizeText(item.summary || item.content || item.desc || item.description || item.detail);
-  const tags = uniqueList([
-    ...normalizeArray(item.tags),
-    ...normalizeArray(item.travelModeTags),
-    ...normalizeArray(item.playTags),
-    ...normalizeArray(item.suitableGroups),
-    ...normalizeArray(item.categoryTags),
-  ]).slice(0, 4);
 
   return {
     id: normalizeText(item._id || item.id),
     type,
     title,
-    region,
+    region: getItemRegionText(item) || normalizeText(item.locationName) || normalizeText(item.address) || "地区待补充",
     priceText: getPriceText(item, type),
-    summary,
-    tags,
+    summary: normalizeText(item.summary || item.content || item.desc || item.description || item.detail),
+    tags: uniqueList([
+      ...normalizeArray(item.tags),
+      ...normalizeArray(item.travelModeTags),
+      ...normalizeArray(item.playTags),
+      ...normalizeArray(item.suitableGroups),
+      ...normalizeArray(item.categoryTags),
+    ]).slice(0, 4),
   };
 }
 
@@ -286,9 +346,7 @@ function formatCandidateLine(candidate, index) {
 }
 
 function getCloudbaseApp() {
-  if (cloudbaseApp) {
-    return cloudbaseApp;
-  }
+  if (cloudbaseApp) return cloudbaseApp;
 
   const env = process.env.TCB_ENV || process.env.ENV_ID || "";
   cloudbaseApp = tcb.init({
@@ -312,6 +370,14 @@ async function fetchCollection(collectionName, query = null) {
   return Array.isArray(result?.data) ? result.data : [];
 }
 
+async function fetchUserByOpenid(openid = "") {
+  const normalizedOpenid = normalizeText(openid);
+  if (!normalizedOpenid) return null;
+
+  const result = await fetchCollection("users", { openid: normalizedOpenid });
+  return result[0] || null;
+}
+
 async function loadPlatformDataset() {
   const [activities, hotels, scenics, products] = await Promise.all([
     fetchCollection("activities", { status: "published" }),
@@ -323,12 +389,7 @@ async function loadPlatformDataset() {
   return { activities, hotels, scenics, products };
 }
 
-function buildRankedCandidates({
-  question = "",
-  location = {},
-  userProfile = {},
-  datasets = {},
-}) {
+function buildRankedCandidates({ question = "", location = {}, userProfile = {}, datasets = {} }) {
   const regionTokens = buildRegionTokens(location);
   const requestedTypes = detectRequestedTypes(question);
   const intentTokens = buildIntentTokens(question, userProfile);
@@ -355,17 +416,10 @@ function buildRankedCandidates({
     .filter((item) => item.score > 0);
 
   const sorted = sortByScore(candidates);
-  const grouped = {
-    activity: [],
-    scenic: [],
-    hotel: [],
-    product: [],
-  };
+  const grouped = { activity: [], scenic: [], hotel: [], product: [] };
 
   sorted.forEach((candidate) => {
-    if (grouped[candidate.type].length >= MAX_CANDIDATE_PER_TYPE) {
-      return;
-    }
+    if (grouped[candidate.type].length >= MAX_CANDIDATE_PER_TYPE) return;
     grouped[candidate.type].push(candidate);
   });
 
@@ -383,7 +437,6 @@ function buildRankedCandidates({
     intentTokens,
     regionLabel: buildRegionLabel(location),
     selected,
-    grouped,
   };
 }
 
@@ -398,19 +451,11 @@ export async function buildPlatformGroundingContext(payload = {}) {
     };
   }
 
-  const location = mergeSkillLocation(
-    payload.location || {},
-    payload.skillContext || {}
-  );
+  const location = mergeSkillLocation(payload.location || {}, payload);
   const userProfile = payload.userProfile || {};
   const preferences = payload.preferences || {};
   const datasets = payload.platformDataset || (await loadPlatformDataset());
-  const ranked = buildRankedCandidates({
-    question,
-    location,
-    userProfile,
-    datasets,
-  });
+  const ranked = buildRankedCandidates({ question, location, userProfile, datasets });
 
   const preferenceText = [
     preferences.distance ? `距离偏好：${preferences.distance}` : "",
@@ -425,20 +470,14 @@ export async function buildPlatformGroundingContext(payload = {}) {
   const dataBlock = lines.length ? lines.join("\n") : "平台当前没有筛到匹配候选。";
 
   const prompt = [
-    "你是智能体“裕小禾”，昵称“小禾”。",
-    "“问小禾”只是小程序聊天模块名，不是你的名字。",
-    `用户问题：${question}`,
+    "以下是平台当前可用的候选内容，请优先基于这些内容回答。",
+    `用户当前问题：${question}`,
     `用户地区：${ranked.regionLabel}`,
     profileText ? `用户画像标签：${profileText}` : "",
     preferenceText ? `用户偏好：${preferenceText}` : "",
     ranked.intentTokens.length ? `问题意图关键词：${ranked.intentTokens.join("、")}` : "",
-    "以下是平台实时筛出的候选数据，请只基于这些数据回答，不要编造平台里不存在的内容：",
+    "你不得编造平台中不存在的活动、景点、商品或酒店。",
     dataBlock,
-    "回答要求：",
-    "1. 优先按用户地区收敛回答，直接点名候选内容。",
-    "2. 明确说明这些候选为什么适合用户当前问题，不要泛泛列举通用玩法。",
-    "3. 如果候选不足，就明确说“当前平台在该区域下筛到的内容有限”，不要虚构额外推荐。",
-    "4. 回答中用“裕小禾”或“小禾”自称，不要把“问小禾”当成智能体名字。",
   ]
     .filter(Boolean)
     .join("\n");
@@ -451,9 +490,414 @@ export async function buildPlatformGroundingContext(payload = {}) {
   };
 }
 
+export function detectMainline(question = "", contextPayload = {}) {
+  const currentTaskMainline = normalizeText(getCurrentTaskState(contextPayload)?.mainline);
+  if (currentTaskMainline) {
+    return currentTaskMainline;
+  }
+
+  const skillMode = normalizeText(contextPayload?.skillContext?.mode);
+  if (skillMode && MAINLINE_SKILL_MODE_MAP[skillMode]) {
+    return MAINLINE_SKILL_MODE_MAP[skillMode];
+  }
+
+  const text = normalizeText(question);
+  if (!text) return MAINLINE.GENERIC;
+  if (includesAny(text, WEATHER_KEYWORDS)) return MAINLINE.WEATHER;
+  if (includesAny(text, BUDDY_KEYWORDS)) return MAINLINE.BUDDY;
+  if (includesAny(text, GUIDE_KEYWORDS)) return MAINLINE.GUIDE;
+  if (includesAny(text, FEEDBACK_KEYWORDS)) return MAINLINE.FEEDBACK;
+  return MAINLINE.GENERIC;
+}
+
+function extractDestination(question = "", contextPayload = {}) {
+  const fromCollected = readStateValue(contextPayload, ["destination", "region", "place"]);
+  if (fromCollected) return fromCollected;
+
+  const patterns = [
+    /去([\u4e00-\u9fa5A-Za-z0-9]{2,12})/u,
+    /到([\u4e00-\u9fa5A-Za-z0-9]{2,12})/u,
+    /在([\u4e00-\u9fa5A-Za-z0-9]{2,12})(?:玩|逛|旅游|旅行)/u,
+  ];
+
+  for (const pattern of patterns) {
+    const matched = normalizeText(question).match(pattern);
+    if (matched?.[1]) return matched[1];
+  }
+  return "";
+}
+
+function extractBudget(question = "", contextPayload = {}) {
+  const fromCollected = readStateValue(contextPayload, ["budget"]);
+  if (fromCollected) return fromCollected;
+
+  const matched = normalizeText(question).match(/(\d{2,5}\s*(?:元|块|w|万))/u);
+  return matched?.[1] || "";
+}
+
+function extractCount(question = "", contextPayload = {}, keys = [], pattern) {
+  const fromCollected = readStateValue(contextPayload, keys);
+  if (fromCollected) return fromCollected;
+  const matched = normalizeText(question).match(pattern);
+  return matched?.[1] || "";
+}
+
+function extractTime(question = "", contextPayload = {}) {
+  const fromCollected = readStateValue(contextPayload, ["time", "travelTime", "date", "days"]);
+  if (fromCollected) return fromCollected;
+
+  const matched = normalizeText(question).match(
+    /(今天|明天|后天|周末|五一|十一|端午|中秋|春节|暑假|寒假|下周|这周|周[一二三四五六日天]|\d{1,2}月\d{1,2}日|\d{1,2}号)/u
+  );
+  return matched?.[1] || "";
+}
+
+function extractCompanionPreference(question = "", contextPayload = {}) {
+  const fromCollected = readStateValue(contextPayload, ["companionPreference", "groupPreference", "buddyPreference"]);
+  if (fromCollected) return fromCollected;
+
+  const patterns = [
+    /(女生搭子|男生搭子|情侣搭子|亲子搭子|摄影搭子|饭搭子|自由行搭子)/u,
+    /(同龄人|大学生|本地人|会开车|能拼车|随和一点|话少一点|会拍照)/u,
+  ];
+
+  for (const pattern of patterns) {
+    const matched = normalizeText(question).match(pattern);
+    if (matched?.[1]) return matched[1];
+  }
+  return "";
+}
+
+function extractRelationship(question = "", contextPayload = {}) {
+  const fromCollected = readStateValue(contextPayload, ["relationship", "groupType"]);
+  if (fromCollected) return fromCollected;
+
+  const matched = normalizeText(question).match(/(情侣|夫妻|亲子|朋友|闺蜜|同学|同事|家人|一个人|独自)/u);
+  return matched?.[1] || "";
+}
+
+function classifyFeedbackType(question = "") {
+  const text = normalizeText(question);
+  if (!text) return "产品反馈";
+  if (/(建议|希望|能不能|可不可以|改进)/u.test(text)) return "平台建议";
+  if (/(难用|卡|bug|闪退|进不去|加载慢|失败)/u.test(text)) return "产品反馈";
+  if (/(烦|难受|委屈|伤心|emo|崩溃|累)/u.test(text)) return "情绪倾诉";
+  return "体验抱怨";
+}
+
+function buildBuddyWorkflow(question = "", contextPayload = {}) {
+  const location = contextPayload?.location || {};
+  const fields = {
+    departure:
+      readStateValue(contextPayload, ["departure", "origin"]) ||
+      normalizeText(location.city || location.displayName),
+    destination: extractDestination(question, contextPayload),
+    time: extractTime(question, contextPayload),
+    companionPreference: extractCompanionPreference(question, contextPayload),
+  };
+
+  const fieldDefs = [
+    { key: "departure", label: "出发地", ask: "你这次准备从哪里出发？" },
+    { key: "destination", label: "目的地", ask: "你这次最想去哪里？" },
+    { key: "time", label: "时间", ask: "你大概什么时候出发？" },
+    { key: "companionPreference", label: "同行偏好", ask: "你更想找什么样的同行搭子？" },
+  ];
+
+  return {
+    mainline: MAINLINE.BUDDY,
+    fields,
+    missingField: fieldDefs.find((item) => !fields[item.key]) || null,
+  };
+}
+
+function buildGuideWorkflow(question = "", contextPayload = {}) {
+  const fields = {
+    time: extractTime(question, contextPayload),
+    peopleCount: extractCount(question, contextPayload, ["peopleCount"], /([一二三四五六七八九十两\d]+(?:人|位))/u),
+    relationship: extractRelationship(question, contextPayload),
+    budget: extractBudget(question, contextPayload),
+    destination: extractDestination(question, contextPayload),
+  };
+
+  const fieldDefs = [
+    { key: "destination", label: "目的地", ask: "你这次最想去哪里？" },
+    { key: "time", label: "时间", ask: "你打算什么时候去？" },
+    { key: "peopleCount", label: "人数", ask: "这次大概几个人一起？" },
+    { key: "relationship", label: "关系", ask: "这次同行的人大概是什么关系？" },
+    { key: "budget", label: "预算", ask: "这次预算大概想控制在什么范围？" },
+  ];
+
+  return {
+    mainline: MAINLINE.GUIDE,
+    fields,
+    missingField: fieldDefs.find((item) => !fields[item.key]) || null,
+  };
+}
+
+function buildBuddyCandidateCard(currentUser = {}, candidate = {}, fields = {}) {
+  const currentTags = new Set(normalizeArray(currentUser.dnaTags));
+  const candidateTags = normalizeArray(candidate.dnaTags);
+  const sharedTags = candidateTags.filter((tag) => currentTags.has(tag));
+  const currentCity = removeRegionSuffix(currentUser.city || currentUser.province);
+  const candidateCity = removeRegionSuffix(candidate.city || candidate.province);
+  const destination = normalizeText(fields.destination);
+  const companionPreference = normalizeText(fields.companionPreference);
+  const candidateText = joinSearchText(candidate);
+
+  let score = 40;
+  if (currentCity && candidateCity && currentCity === candidateCity) score += 18;
+  score += Math.min(sharedTags.length * 10, 30);
+  if (companionPreference && candidateText.includes(normalizeTextLower(companionPreference))) score += 15;
+  if (destination && candidateText.includes(normalizeTextLower(destination))) score += 10;
+  if (candidate.profileCompleted) score += 5;
+  if (candidate.dnaCompleted) score += 5;
+
+  const reasons = [];
+  if (currentCity && candidateCity && currentCity === candidateCity) reasons.push("同城出发更方便");
+  if (sharedTags.length) reasons.push(`DNA 标签重合 ${Math.min(sharedTags.length, 3)} 项`);
+  if (companionPreference && candidateText.includes(normalizeTextLower(companionPreference))) {
+    reasons.push(`偏好贴近“${companionPreference}”`);
+  }
+  if (!reasons.length) reasons.push("资料和偏好方向比较接近");
+
+  return {
+    id: normalizeText(candidate._id || candidate.id),
+    type: "buddy",
+    title: normalizeText(candidate.nickName) || "同行搭子",
+    region:
+      [candidate.province, candidate.city, candidate.district]
+        .map(removeRegionSuffix)
+        .filter(Boolean)
+        .join(" / ") || "地区待补充",
+    priceText: "同行匹配",
+    summary: normalizeText(candidate.signature || candidate.bio || "") || "已完善基础资料，可进一步发起同行申请。",
+    tags: uniqueList(sharedTags.concat(candidateTags)).slice(0, 4),
+    matchReason: reasons.join("；"),
+    score,
+  };
+}
+
+async function buildBuddyCandidates(contextPayload = {}, cloudbaseUserId = "", workflow = {}) {
+  const currentUser = await fetchUserByOpenid(cloudbaseUserId);
+  if (!currentUser) return [];
+
+  const users = await fetchCollection("users");
+  return users
+    .filter((item) => item?.openid && item.openid !== cloudbaseUserId)
+    .filter((item) => item.profileCompleted && item.dnaCompleted)
+    .map((item) => buildBuddyCandidateCard(currentUser, item, workflow.fields || {}))
+    .sort((left, right) => right.score - left.score)
+    .slice(0, BUDDY_MAX_CANDIDATES);
+}
+
+export async function buildConversationWorkflow({
+  question = "",
+  contextPayload = {},
+  cloudbaseUserId = "",
+} = {}) {
+  const mainline = detectMainline(question, contextPayload);
+  const currentTaskState = getCurrentTaskState(contextPayload);
+
+  if (mainline === MAINLINE.BUDDY) {
+    const workflow = buildBuddyWorkflow(question, contextPayload);
+    const buddyCandidates = workflow.missingField
+      ? []
+      : await buildBuddyCandidates(contextPayload, cloudbaseUserId, workflow);
+
+    return {
+      ...workflow,
+      isReady: !workflow.missingField,
+      buddyCandidates,
+      lastAskedField: normalizeText(currentTaskState.lastAskedField),
+    };
+  }
+
+  if (mainline === MAINLINE.GUIDE) {
+    const workflow = buildGuideWorkflow(question, contextPayload);
+    return {
+      ...workflow,
+      isReady: !workflow.missingField,
+      lastAskedField: normalizeText(currentTaskState.lastAskedField),
+    };
+  }
+
+  if (mainline === MAINLINE.FEEDBACK) {
+    return {
+      mainline,
+      feedbackType:
+        normalizeText(currentTaskState.feedbackType) ||
+        classifyFeedbackType(question),
+    };
+  }
+
+  return {
+    mainline,
+    lastAskedField: normalizeText(currentTaskState.lastAskedField),
+  };
+}
+
+export async function buildBuddyMatchResult({
+  departure = "",
+  destination = "",
+  time = "",
+  companionPreference = "",
+  cloudbaseUserId = "",
+  contextPayload = {},
+} = {}) {
+  const mergedContextPayload = {
+    ...(contextPayload || {}),
+    currentTaskState: {
+      ...(contextPayload?.currentTaskState || {}),
+      mainline: MAINLINE.BUDDY,
+      collected: {
+        ...(contextPayload?.currentTaskState?.collected || {}),
+        departure: normalizeText(departure),
+        destination: normalizeText(destination),
+        time: normalizeText(time),
+        companionPreference: normalizeText(companionPreference),
+      },
+    },
+  };
+
+  const workflow = await buildConversationWorkflow({
+    question: "",
+    contextPayload: mergedContextPayload,
+    cloudbaseUserId,
+  });
+
+  return {
+    success: true,
+    mainline: workflow?.mainline || MAINLINE.BUDDY,
+    isReady: !!workflow?.isReady,
+    missingField: workflow?.missingField
+      ? {
+          key: normalizeText(workflow.missingField.key),
+          label: normalizeText(workflow.missingField.label),
+          ask: normalizeText(workflow.missingField.ask),
+        }
+      : null,
+    collected: workflow?.fields || {},
+    candidates: Array.isArray(workflow?.buddyCandidates)
+      ? workflow.buddyCandidates.map((item) => ({
+          id: normalizeText(item.id),
+          nickname: normalizeText(item.title),
+          region: normalizeText(item.region),
+          summary: normalizeText(item.summary),
+          tags: normalizeArray(item.tags),
+          matchReason: normalizeText(item.matchReason),
+        }))
+      : [],
+  };
+}
+
+function buildGuideRecallQuestion(fields = {}) {
+  const segments = [
+    normalizeText(fields.destination),
+    normalizeText(fields.time),
+    normalizeText(fields.peopleCount),
+    normalizeText(fields.relationship),
+    normalizeText(fields.budget),
+    "活动",
+    "景点",
+    "住宿",
+    "路线",
+  ].filter(Boolean);
+
+  return segments.join(" ");
+}
+
+function normalizeGuideCandidates(candidates = []) {
+  return (Array.isArray(candidates) ? candidates : [])
+    .filter((item) => normalizeText(item.type) !== "product")
+    .slice(0, GUIDE_MAX_CANDIDATES)
+    .map((item) => ({
+      id: normalizeText(item.id),
+      type: normalizeText(item.type),
+      title: normalizeText(item.title),
+      region: normalizeText(item.region),
+      priceText: normalizeText(item.priceText),
+      summary: normalizeText(item.summary),
+      tags: normalizeArray(item.tags),
+    }));
+}
+
+export async function buildGuideCustomizationResult({
+  time = "",
+  peopleCount = "",
+  relationship = "",
+  budget = "",
+  destination = "",
+  contextPayload = {},
+} = {}) {
+  const mergedContextPayload = {
+    ...(contextPayload || {}),
+    currentTaskState: {
+      ...(contextPayload?.currentTaskState || {}),
+      mainline: MAINLINE.GUIDE,
+      collected: {
+        ...(contextPayload?.currentTaskState?.collected || {}),
+        time: normalizeText(time),
+        peopleCount: normalizeText(peopleCount),
+        relationship: normalizeText(relationship),
+        budget: normalizeText(budget),
+        destination: normalizeText(destination),
+      },
+    },
+  };
+
+  const workflow = await buildConversationWorkflow({
+    question: "",
+    contextPayload: mergedContextPayload,
+    cloudbaseUserId: "",
+  });
+
+  if (!workflow?.isReady) {
+    return {
+      success: true,
+      mainline: workflow?.mainline || MAINLINE.GUIDE,
+      isReady: false,
+      missingField: workflow?.missingField
+        ? {
+            key: normalizeText(workflow.missingField.key),
+            label: normalizeText(workflow.missingField.label),
+            ask: normalizeText(workflow.missingField.ask),
+          }
+        : null,
+      collected: workflow?.fields || {},
+      candidates: [],
+    };
+  }
+
+  const groundingContext = await buildPlatformGroundingContext({
+    question: buildGuideRecallQuestion(workflow.fields || {}),
+    location: mergedContextPayload?.location || {},
+    userProfile: mergedContextPayload?.userProfile || {},
+    preferences: mergedContextPayload?.preferences || {},
+    skillContext: {
+      mode: MAINLINE.GUIDE,
+      title: "攻略定制",
+      collected: workflow.fields || {},
+    },
+    currentTaskState: {
+      mainline: MAINLINE.GUIDE,
+      collected: workflow.fields || {},
+    },
+  });
+
+  return {
+    success: true,
+    mainline: workflow?.mainline || MAINLINE.GUIDE,
+    isReady: true,
+    missingField: null,
+    collected: workflow?.fields || {},
+    candidates: normalizeGuideCandidates(groundingContext?.candidates || []),
+  };
+}
+
 export function buildAgentUserPrompt({
   question = "",
   groundingContext = {},
+  workflowContext = {},
   contextPayload = {},
 } = {}) {
   const normalizedQuestion = normalizeText(question);
@@ -465,42 +909,77 @@ export function buildAgentUserPrompt({
     .map(([key, value]) => `${key}: ${value}`);
   const skillMode = normalizeText(contextPayload?.skillContext?.mode);
   const skillTitle = normalizeText(contextPayload?.skillContext?.title);
-  const skillPairs = Object.entries(contextPayload?.skillContext?.collected || {})
+  const skillPairs = Object.entries(getMergedCollected(contextPayload))
     .map(([key, value]) => [normalizeText(key), normalizeText(value)])
     .filter(([, value]) => value)
     .map(([key, value]) => `${key}: ${value}`);
+  const mainline = workflowContext?.mainline || detectMainline(question, contextPayload);
+  const shouldAttachPlatformGrounding =
+    mainline === MAINLINE.GUIDE || mainline === MAINLINE.GENERIC;
 
-  const skillInstruction =
-    skillMode === "guide_customization"
+  const buddyFields = workflowContext?.fields || {};
+  const guideFields = workflowContext?.fields || {};
+  const buddyCandidates = Array.isArray(workflowContext?.buddyCandidates)
+    ? workflowContext.buddyCandidates
+    : [];
+
+  const mainlineInstruction =
+    mainline === MAINLINE.BUDDY
       ? [
-          "当前是“攻略定制”技能，不要一上来就直接大段推荐。",
-          "请先热情问候用户，再用聊天口吻一步步引导用户补充行程信息。",
-          "优先逐步弄清这些信息：出发日期和天数、人数、人物关系、出发地、目的地、途径地、出行方式、预算。",
-          "如果用户暂时不确定某一项，请你主动给出合理默认，不要卡住对话。",
-          "在信息还不够时，只问当前最必要的一个问题，不要一次抛出很多问题。",
-          "信息足够后，再结合季节、天气、温度、旺季淡季和平台候选内容给出更贴合的行程建议。",
-          "如果人物关系是朋友、闺蜜、同事团建等平等关系，预算更适合按人均理解；如果是家庭、亲子、情侣等关系，预算优先按总预算理解。"
-        ].join("")
-      : skillMode === "xiaohe_feedback"
-        ? "当前是“小禾树洞”技能，请先真诚接住用户情绪和反馈，再自然追问必要细节。"
-        : "";
+          "当前主线：找搭子。",
+          "第一轮只问 1 个最必要的问题。",
+          "目标字段只有：出发地、目的地、时间、同行偏好。",
+          `当前字段：出发地=${buddyFields.departure || "未提供"}；目的地=${buddyFields.destination || "未提供"}；时间=${buddyFields.time || "未提供"}；同行偏好=${buddyFields.companionPreference || "未提供"}。`,
+          workflowContext?.missingField
+            ? `信息还不足，当前只追问这个问题：${workflowContext.missingField.ask}`
+            : buddyCandidates.length
+              ? `信息已足够，请仅基于这些搭子候选回答，并说明匹配理由：\n${buddyCandidates.map((item, index) => `${index + 1}. ${item.title}｜${item.region}｜${item.matchReason}`).join("\n")}`
+              : "信息已足够，但当前没有合适候选。请明确说明“当前没有合适候选”，并建议补充时间、出发地或同行偏好。",
+          "禁止跳成商品、景点、特产推荐。",
+          "禁止因为“美食”等兴趣词误判成商品推荐。",
+        ].join("\n")
+      : mainline === MAINLINE.GUIDE
+        ? [
+            "当前主线：攻略定制。",
+            "先收集：时间、人数、关系、预算、目的地。",
+            `当前字段：时间=${guideFields.time || "未提供"}；人数=${guideFields.peopleCount || "未提供"}；关系=${guideFields.relationship || "未提供"}；预算=${guideFields.budget || "未提供"}；目的地=${guideFields.destination || "未提供"}。`,
+            workflowContext?.missingField
+              ? `当前信息不足，只问这一个关键问题：${workflowContext.missingField.ask}`
+              : "信息足够后再生成路线和建议，并且必须解释“为什么推荐这些”。",
+            "不得脑补平台中不存在的内容。",
+          ].join("\n")
+        : mainline === MAINLINE.FEEDBACK
+          ? [
+              "当前主线：树洞反馈。",
+              `当前反馈分类：${workflowContext?.feedbackType || "产品反馈"}。`,
+              "以接住情绪、接收意见为主。",
+              "不导购、不推荐、不跳业务主线，只在必要时温和追问。",
+            ].join("\n")
+          : mainline === MAINLINE.WEATHER
+            ? "当前主线：天气/位置。只负责天气、位置、穿衣和出行提醒，不扩题。"
+            : [
+                "当前主线：普通聊天防串场。",
+                "不是天气意图不要查天气。",
+                "不是商品意图不要推商品。",
+                "不是搭子意图不要匹配搭子。",
+                "不确定时先确认，不要自动跳任务。",
+              ].join("\n");
 
   const sections = [
-    "你是智能体“裕小禾”，对话时自称“小禾”。",
-    "“问小禾”只是小程序里的功能模块名，不是你的名字。",
-    "你要基于当前小程序平台能力回答，优先使用已经提供的平台候选内容和用户上下文，不要编造平台里不存在的内容。",
-    "如果问题涉及平台推荐，要结合用户地区、偏好和候选内容直接给出贴近当前需求的建议。",
-    "如果信息不足，要诚实说明，并给出下一步更具体的提问建议。",
+    "你是智能体“裕小禾”，对话中自称“小禾”。",
+    "“问小禾”只是小程序里的功能入口名，不是你的名字。",
+    "你必须优先使用平台候选和上下文，不得编造平台中不存在的内容。",
+    "如果缺数据，要明确说明缺什么。",
     skillMode ? `当前对话来自技能流程：${skillTitle || skillMode}` : "",
-    skillPairs.length ? `技能已收集信息：${skillPairs.join("；")}` : "",
-    skillMode ? "这不是普通闲聊。请把技能上下文真正用进回答里。" : "",
-    skillInstruction,
+    skillPairs.length ? `已收集任务字段：${skillPairs.join("；")}` : "",
+    `当前执行主线：${mainline}`,
+    mainlineInstruction,
     `用户当前问题：${normalizedQuestion}`,
     `用户当前地区：${regionLabel}`,
     profileTags ? `用户画像标签：${profileTags}` : "",
     preferencePairs.length ? `用户偏好：${preferencePairs.join("；")}` : "",
-    groundingContext?.prompt || "",
-    "请直接开始回答用户问题。",
+    shouldAttachPlatformGrounding ? groundingContext?.prompt || "" : "",
+    "请直接开始回答用户。",
   ];
 
   return sections.filter(Boolean).join("\n\n");
@@ -519,26 +998,17 @@ export class DetectCloudbaseUserMiddleware {
       this.request?.headers?.get?.("Authorization") ||
       "";
 
-    const token = authorization.startsWith("Bearer ")
-      ? authorization.slice(7)
-      : "";
-
-    if (!token) {
-      return;
-    }
+    const token = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
+    if (!token) return;
 
     try {
       const payload = jwtDecode(token);
       input.forwardedProps = {
         ...(input.forwardedProps || {}),
-        cloudbaseUserId:
-          payload?.uid || payload?.sub || payload?.openid || payload?.user_id || "",
+        cloudbaseUserId: payload?.uid || payload?.sub || payload?.openid || payload?.user_id || "",
       };
     } catch (error) {
-      console.warn(
-        "[DetectCloudbaseUserMiddleware] jwt decode failed",
-        error?.message || error
-      );
+      console.warn("[DetectCloudbaseUserMiddleware] jwt decode failed", error?.message || error);
     }
   }
 }

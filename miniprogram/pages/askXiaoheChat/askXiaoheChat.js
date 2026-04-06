@@ -56,6 +56,58 @@ function normalizeTextLower(value) {
   return normalizeText(value).toLowerCase()
 }
 
+function getSettingAsync() {
+  return new Promise((resolve, reject) => {
+    wx.getSetting({
+      success: resolve,
+      fail: reject
+    })
+  })
+}
+
+function getLocationAsync(timeout = 8000) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error("getLocation timeout"))
+    }, timeout)
+
+    wx.getLocation({
+      type: "gcj02",
+      success: (res) => {
+        clearTimeout(timer)
+        resolve(res)
+      },
+      fail: (error) => {
+        clearTimeout(timer)
+        reject(error)
+      }
+    })
+  })
+}
+
+function readSelectedRegion() {
+  try {
+    return wx.getStorageSync("selectedRegion") || null
+  } catch (error) {
+    return null
+  }
+}
+
+function buildLocationContext(userInfo = {}, userLocation = null, selectedRegion = null) {
+  const region = selectedRegion || {}
+  const location = userLocation || {}
+
+  return {
+    province: region.province || userInfo.province || "",
+    city: region.city || userInfo.city || "",
+    district: region.district || userInfo.district || "",
+    displayName: region.displayName || region.title || region.label || "",
+    locationText: region.locationText || region.address || "",
+    latitude: location.latitude || region.latitude || "",
+    longitude: location.longitude || region.longitude || ""
+  }
+}
+
 function ensureBuddySession() {
   const app = getApp()
   if (app.hasActiveSession && app.hasActiveSession()) {
@@ -178,8 +230,151 @@ function buildSkillContext(skillMode = "") {
 
   return {
     mode: skillMode,
-    title: SKILL_CONFIG[skillMode].badgeName
+    title: SKILL_CONFIG[skillMode].badgeName,
+    collected: {}
   }
+}
+
+const MAINLINE_BY_SKILL_MODE = {
+  buddy_matching: "buddy_matching",
+  guide_customization: "guide_customization",
+  xiaohe_feedback: "xiaohe_feedback"
+}
+
+function createEmptyTaskState(mainline = "") {
+  return {
+    mainline: normalizeText(mainline),
+    subType: "",
+    collected: {},
+    missingField: "",
+    lastAskedField: "",
+    candidateIds: [],
+    feedbackType: "",
+    intentConfidence: mainline ? 1 : 0
+  }
+}
+
+function createInitialTaskState(skillMode = "") {
+  const mainline = MAINLINE_BY_SKILL_MODE[normalizeText(skillMode)] || ""
+  return createEmptyTaskState(mainline)
+}
+
+function readCollectedText(collected = {}, keys = []) {
+  for (const key of keys) {
+    const value = normalizeText(collected && collected[key])
+    if (value) return value
+  }
+  return ""
+}
+
+function extractTaskDestination(text = "", collected = {}) {
+  const existing = readCollectedText(collected, ["destination"])
+  if (existing) return existing
+
+  const patterns = [
+    /去([\u4e00-\u9fa5A-Za-z0-9]{2,12})/u,
+    /到([\u4e00-\u9fa5A-Za-z0-9]{2,12})/u,
+    /在([\u4e00-\u9fa5A-Za-z0-9]{2,12})(?:玩|逛|旅游|旅行)/u
+  ]
+
+  for (const pattern of patterns) {
+    const matched = normalizeText(text).match(pattern)
+    if (matched && matched[1]) return matched[1]
+  }
+
+  return ""
+}
+
+function extractTaskTime(text = "", collected = {}) {
+  const existing = readCollectedText(collected, ["time"])
+  if (existing) return existing
+
+  const matched = normalizeText(text).match(
+    /(今天|明天|后天|周末|五一|十一|端午|中秋|春节|暑假|寒假|下周|这周|周[一二三四五六日天]|\d{1,2}月\d{1,2}日|\d{1,2}号)/u
+  )
+  return matched && matched[1] ? matched[1] : ""
+}
+
+function extractBuddyCompanionPreference(text = "", collected = {}) {
+  const existing = readCollectedText(collected, ["companionPreference"])
+  if (existing) return existing
+
+  const patterns = [
+    /(女生搭子|男生搭子|情侣搭子|亲子搭子|摄影搭子|饭搭子|自由行搭子)/u,
+    /(同龄人|大学生|本地人|会开车|能拼车|随和一点|话少一点|会拍照)/u
+  ]
+
+  for (const pattern of patterns) {
+    const matched = normalizeText(text).match(pattern)
+    if (matched && matched[1]) return matched[1]
+  }
+
+  return ""
+}
+
+function extractGuidePeopleCount(text = "", collected = {}) {
+  const existing = readCollectedText(collected, ["peopleCount"])
+  if (existing) return existing
+
+  const matched = normalizeText(text).match(/([一二三四五六七八九十两\d]+(?:人|位))/u)
+  return matched && matched[1] ? matched[1] : ""
+}
+
+function extractGuideRelationship(text = "", collected = {}) {
+  const existing = readCollectedText(collected, ["relationship"])
+  if (existing) return existing
+
+  const matched = normalizeText(text).match(/(情侣|夫妻|亲子|朋友|闺蜜|同学|同事|家人|一个人|独自)/u)
+  return matched && matched[1] ? matched[1] : ""
+}
+
+function extractGuideBudget(text = "", collected = {}) {
+  const existing = readCollectedText(collected, ["budget"])
+  if (existing) return existing
+
+  const matched = normalizeText(text).match(/(\d{2,5}\s*(?:元|块|w|万))/u)
+  return matched && matched[1] ? matched[1] : ""
+}
+
+function buildBuddyCollectedFields(text = "", prevCollected = {}, location = {}) {
+  return {
+    departure:
+      readCollectedText(prevCollected, ["departure"]) ||
+      normalizeText(location && (location.city || location.displayName)) ||
+      "",
+    destination: extractTaskDestination(text, prevCollected),
+    time: extractTaskTime(text, prevCollected),
+    companionPreference: extractBuddyCompanionPreference(text, prevCollected)
+  }
+}
+
+function buildGuideCollectedFields(text = "", prevCollected = {}) {
+  return {
+    time: extractTaskTime(text, prevCollected),
+    peopleCount: extractGuidePeopleCount(text, prevCollected),
+    relationship: extractGuideRelationship(text, prevCollected),
+    budget: extractGuideBudget(text, prevCollected),
+    destination: extractTaskDestination(text, prevCollected)
+  }
+}
+
+function pickMissingField(mainline = "", collected = {}) {
+  const fieldOrderMap = {
+    buddy_matching: ["destination", "time", "departure", "companionPreference"],
+    guide_customization: ["destination", "time", "peopleCount", "relationship", "budget"]
+  }
+
+  const order = fieldOrderMap[mainline] || []
+  return order.find((field) => !normalizeText(collected && collected[field])) || ""
+}
+
+function classifyFeedbackType(text = "") {
+  const source = normalizeText(text)
+  if (!source) return ""
+  if (/(建议|希望|能不能|可不可以|改进)/u.test(source)) return "platform_suggestion"
+  if (/(难用|卡|bug|闪退|进不去|加载慢|失败)/u.test(source)) return "product_feedback"
+  if (/(烦|难受|委屈|伤心|emo|崩溃|累)/u.test(source)) return "emotion_support"
+  return "experience_complaint"
 }
 
 function buildSkillOpeningQuestion(skillMode = "") {
@@ -188,7 +383,7 @@ function buildSkillOpeningQuestion(skillMode = "") {
   }
 
   if (skillMode === "buddy_matching") {
-    return "用户刚进入了“找搭子”技能。请你先用自然聊天的语气确认这次想找什么类型的同行搭子，再一步步补充目的地、出发时间、出发地、人数偏好和同行边界。不要把这段对话做成表单。第一轮只问最必要的一个问题。"
+    return "用户刚进入了“找搭子”技能。请你先以“小禾”的身份主动发出一条自然的开场引导，不要直接给推荐结果，也不要照搬固定模板。开场可以根据用户最近对话里流露的情绪、当前定位、天气或时令变化自然调整语气，但核心目标不变：先引导用户说清这次想去哪、什么时候出发、希望和什么样的人同行。第一轮只问当前最必要的一个问题，不要把对话做成表单，也不要连续追问多项。等用户回答后，再进入筛选搭子候选。"
   }
 
   if (skillMode === "xiaohe_feedback") {
@@ -420,6 +615,7 @@ Page({
     messages: [],
     inputValue: "",
     isAiLoading: false,
+    currentTaskState: createEmptyTaskState(""),
     genericPreferences: {
       distance: "",
       budget: "",
@@ -433,6 +629,7 @@ Page({
     const source = options && options.source ? options.source : "search_input"
     const skillMode = normalizeSkillMode(options && options.skillMode ? options.skillMode : "")
     const skillConfig = SKILL_CONFIG[skillMode] || null
+    const shouldShowSkillIntro = source === "skill_entry" && !!skillConfig && skillMode !== "buddy_matching"
     const question = options && options.q ? decodeURIComponent(options.q) : ""
     const conversationId = options && options.conversationId ? decodeURIComponent(options.conversationId) : ""
 
@@ -452,13 +649,14 @@ Page({
       skillMode,
       question: initialQuestion,
       conversationId: nextConversationId,
-      showSkillIntro: source === "skill_entry" && !!skillConfig,
+      showSkillIntro: shouldShowSkillIntro,
       showSkillBadge: source === "skill_entry" && !!skillConfig,
       skillBadgeName: skillConfig ? skillConfig.badgeName : "",
       inputPlaceholder: skillConfig ? skillConfig.placeholder : this.data.text.inputPlaceholder,
-      introText: skillConfig ? skillConfig.intro : "",
+      introText: shouldShowSkillIntro && skillConfig ? skillConfig.intro : "",
       quickOptions: [],
       messages,
+      currentTaskState: createInitialTaskState(skillMode),
       genericPreferences: {
         distance: "",
         budget: "",
@@ -469,11 +667,6 @@ Page({
     this.persistConversation(nextConversationId, messages, initialQuestion)
 
     if (source === "skill_entry") {
-      if (skillMode === "buddy_matching") {
-        this.requestBuddyMatches("我想找一个合适的搭子")
-        return
-      }
-
       const openingQuestion = buildSkillOpeningQuestion(skillMode)
       this.requestGenericAnswer(openingQuestion, {
         contextPayload: {
@@ -523,10 +716,13 @@ Page({
       introText: "",
       quickOptions: [],
       messages: Array.isArray(conversation.messages) ? conversation.messages : [],
+      currentTaskState: conversation.currentTaskState || createInitialTaskState(skillMode),
       genericPreferences: {
-        distance: "",
-        budget: "",
-        detailLevel: ""
+        ...(conversation.genericPreferences || {
+          distance: "",
+          budget: "",
+          detailLevel: ""
+        })
       }
     })
   },
@@ -547,7 +743,11 @@ Page({
       firstQuestion,
       createdAt: getConversationById(conversationId)?.createdAt || Date.now(),
       updatedAt: Date.now(),
-      messages
+      messages,
+      source: this.data.source,
+      skillMode: this.data.skillMode,
+      genericPreferences: this.data.genericPreferences,
+      currentTaskState: this.data.currentTaskState
     })
   },
 
@@ -560,6 +760,73 @@ Page({
     if (!firstQuestion) return
 
     this.persistConversation(conversationId, messages, firstQuestion)
+  },
+
+  getCurrentSkillContext(extraSkillContext = null) {
+    const baseSkillContext = buildSkillContext(this.data.skillMode) || {}
+    const currentTaskState = this.data.currentTaskState || createEmptyTaskState("")
+    const mergedSkillContext = {
+      ...baseSkillContext,
+      ...(extraSkillContext || {})
+    }
+
+    return {
+      ...mergedSkillContext,
+      collected: {
+        ...(mergedSkillContext.collected || {}),
+        ...(currentTaskState.collected || {})
+      }
+    }
+  },
+
+  buildNextTaskState(question, location = null) {
+    const currentTaskState = this.data.currentTaskState || createEmptyTaskState("")
+    const skillMainline = MAINLINE_BY_SKILL_MODE[this.data.skillMode] || currentTaskState.mainline || ""
+    const nextState = {
+      ...createEmptyTaskState(skillMainline),
+      ...currentTaskState,
+      mainline: skillMainline || currentTaskState.mainline || ""
+    }
+
+    const text = normalizeText(question)
+    if (!text) {
+      return nextState
+    }
+
+    if (nextState.mainline === "buddy_matching") {
+      const collected = buildBuddyCollectedFields(text, nextState.collected, location)
+      return {
+        ...nextState,
+        collected,
+        missingField: pickMissingField("buddy_matching", collected),
+        lastAskedField: currentTaskState.missingField || currentTaskState.lastAskedField || ""
+      }
+    }
+
+    if (nextState.mainline === "guide_customization") {
+      const collected = buildGuideCollectedFields(text, nextState.collected)
+      return {
+        ...nextState,
+        collected,
+        missingField: pickMissingField("guide_customization", collected),
+        lastAskedField: currentTaskState.missingField || currentTaskState.lastAskedField || ""
+      }
+    }
+
+    if (nextState.mainline === "xiaohe_feedback") {
+      return {
+        ...nextState,
+        feedbackType: classifyFeedbackType(text)
+      }
+    }
+
+    return nextState
+  },
+
+  updateCurrentTaskState(question, location = null) {
+    const nextTaskState = this.buildNextTaskState(question, location)
+    this.setData({ currentTaskState: nextTaskState })
+    return nextTaskState
   },
 
   goBack() {
@@ -596,11 +863,6 @@ Page({
     this.syncCurrentConversation()
 
     if (this.data.source === "skill_entry") {
-      if (this.data.skillMode === "buddy_matching") {
-        this.requestBuddyMatches(value)
-        return
-      }
-
       this.requestGenericAnswer(value, {
         contextPayload: {
           mode: "skill",
@@ -723,17 +985,30 @@ Page({
     this.setData({ isAiLoading: true })
     const aiMessageId = this.appendAiPlaceholder()
     const recommendationType = detectRecommendationType(question)
-    const shouldRenderStructuredAnswer = !!recommendationType
+    const latestLocation = await this.ensureFreshLocationContext()
+    const nextTaskState = this.updateCurrentTaskState(question, latestLocation)
+    const contextPayload = {
+      ...(options.contextPayload || {}),
+      location: latestLocation,
+      currentTaskState: nextTaskState,
+      skillContext: {
+        ...this.getCurrentSkillContext(options.contextPayload && options.contextPayload.skillContext),
+        collected: {
+          ...(nextTaskState.collected || {})
+        }
+      }
+    }
+    const shouldRenderStructuredAnswer = !!recommendationType && !nextTaskState.mainline
     this.startLoadingAnimation(aiMessageId)
 
     try {
-      const groundedUiPromise = this.buildGroundedRecommendationUi(question, options.contextPayload || {})
+      const groundedUiPromise = this.buildGroundedRecommendationUi(question, contextPayload)
       const res = await wx.cloud.extend.AI.bot.sendMessage({
         data: {
           botId: yuxiaoheBotId,
           msg: question,
           history: toAgentHistory(this.data.messages),
-          contextPayload: this.buildGenericPayload(question, options.contextPayload || {})
+          contextPayload: this.buildGenericPayload(question, contextPayload)
         }
       })
 
@@ -783,10 +1058,56 @@ Page({
     }
   },
 
+  async ensureFreshLocationContext() {
+    const app = getApp()
+    let userInfo = {}
+
+    try {
+      userInfo = (app && typeof app.getUserInfo === "function" && app.getUserInfo()) || {}
+    } catch (error) {
+      userInfo = {}
+    }
+
+    const selectedRegion = readSelectedRegion()
+    let nextUserLocation = null
+
+    try {
+      nextUserLocation = wx.getStorageSync("userLocation") || userInfo.userLocation || null
+    } catch (error) {
+      nextUserLocation = userInfo.userLocation || null
+    }
+
+    try {
+      const setting = await getSettingAsync()
+      if (setting && setting.authSetting && setting.authSetting["scope.userLocation"]) {
+        const locationRes = await getLocationAsync()
+        nextUserLocation = {
+          latitude: locationRes.latitude,
+          longitude: locationRes.longitude
+        }
+        wx.setStorageSync("userLocation", nextUserLocation)
+
+        if (userInfo && userInfo.openid && app && typeof app.setUserInfo === "function") {
+          app.setUserInfo({
+            ...userInfo,
+            userLocation: nextUserLocation,
+            locationAuthorized: true
+          })
+          userInfo = (typeof app.getUserInfo === "function" && app.getUserInfo()) || userInfo
+        }
+      }
+    } catch (error) {
+      console.warn("[askXiaoheChat] refresh location before request failed", error)
+    }
+
+    return buildLocationContext(userInfo, nextUserLocation, selectedRegion)
+  },
+
   buildGenericPayload(question, extraPayload = {}) {
     const app = getApp()
     let userInfo = {}
     let cachedUserLocation = null
+    let selectedRegion = null
 
     try {
       userInfo = (app && typeof app.getUserInfo === "function" && app.getUserInfo()) || {}
@@ -800,21 +1121,38 @@ Page({
       cachedUserLocation = null
     }
 
+    selectedRegion = readSelectedRegion()
+
+    const baseLocation = buildLocationContext(userInfo, cachedUserLocation, selectedRegion)
+    const mergedLocation = {
+      ...baseLocation,
+      ...(extraPayload.location || {})
+    }
+    const currentTaskState = extraPayload.currentTaskState || this.data.currentTaskState || createEmptyTaskState("")
+    const skillContext = {
+      ...this.getCurrentSkillContext(extraPayload.skillContext),
+      collected: {
+        ...(this.getCurrentSkillContext(extraPayload.skillContext).collected || {}),
+        ...(currentTaskState.collected || {})
+      }
+    }
+
     return {
       mode: extraPayload.mode || "generic",
+      source: this.data.source || "search_input",
       question,
-      location: {
-        province: userInfo.province || "",
-        city: userInfo.city || "",
-        district: userInfo.district || "",
-        latitude: cachedUserLocation && cachedUserLocation.latitude ? cachedUserLocation.latitude : "",
-        longitude: cachedUserLocation && cachedUserLocation.longitude ? cachedUserLocation.longitude : ""
-      },
+      location: mergedLocation,
       userProfile: {
         nickname: userInfo.nickName || userInfo.nickname || "",
-        dnaTags: userInfo.dnaTags || []
+        dnaTags: userInfo.dnaTags || [],
+        residentCity: userInfo.city || "",
+        commonDeparture: userInfo.commonDeparture || userInfo.city || "",
+        travelStyle: userInfo.travelStyle || "",
+        budgetRange: userInfo.budgetRange || ""
       },
       preferences: this.data.genericPreferences || {},
+      skillContext,
+      currentTaskState,
       history: (this.data.messages || [])
         .map((item) => ({
           role: item.role,
