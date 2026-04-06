@@ -1,5 +1,9 @@
 const DEFAULT_HOTEL_COVER = '/images/nav-hotel.png'
 const {
+  resolveMediaSource,
+  resolveMediaList,
+} = require('../../utils/mediaAssets')
+const {
   isFavorited,
   toggleFavorite,
   recordFootprint,
@@ -53,7 +57,7 @@ Page({
     try {
       const db = wx.cloud.database()
       const res = await db.collection('hotels').doc(id).get()
-      const detail = this.normalizeDetail(res.data || null)
+      const detail = await this.normalizeDetail(res.data || null)
       const favorited = isFavorited('hotel', detail && detail._id)
       if (detail) {
         recordFootprint(this.buildCollectionRecord(detail))
@@ -74,13 +78,13 @@ Page({
     }
   },
 
-  normalizeDetail(detail) {
+  async normalizeDetail(detail) {
     if (!detail) {
       return null
     }
 
-    const cover = detail.cover || DEFAULT_HOTEL_COVER
-    const gallery = normalizeArray(detail.gallery).length ? normalizeArray(detail.gallery) : [cover]
+    const cover = await resolveMediaSource(detail.cover, DEFAULT_HOTEL_COVER)
+    const gallery = await resolveMediaList(normalizeArray(detail.gallery), cover)
     const tags = normalizeArray(detail.tags).slice(0, 6)
     const facilities = normalizeArray(detail.facilities)
     const roomTypes = normalizeArray(detail.roomTypes)
@@ -89,6 +93,7 @@ Page({
     const regionText = [detail.province, detail.city, detail.district].filter(Boolean).join(' · ')
     const commentCount = Number(detail.commentCount || 0)
     const price = Number(detail.price || 0)
+    const score = Number(detail.score || 0)
 
     return {
       ...detail,
@@ -103,7 +108,8 @@ Page({
       locationText: detail.locationText || detail.address || regionText || '地点待补充',
       addressText: detail.address || '',
       priceText: price ? `¥${price}起` : '价格待定',
-      scoreText: detail.score ? `${detail.score}分 · ${commentCount}人评价` : '点评待补充',
+      scoreText: score ? `${score}分 · ${commentCount}人评价` : '点评待补充',
+      titleScoreText: score ? `${score}分 · ${commentCount}人评价` : '',
       descriptionText: detail.description || detail.desc || detail.summary || '',
     }
   },

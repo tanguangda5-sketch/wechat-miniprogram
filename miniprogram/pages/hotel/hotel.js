@@ -1,9 +1,7 @@
 const db = wx.cloud.database()
-const SAFE_HOTEL_COVER = '/images/nav-hotel.png'
+const { resolveMediaSource } = require('../../utils/mediaAssets')
 
-function normalizeCover(src = '') {
-  return String(src || '').trim() || SAFE_HOTEL_COVER
-}
+const SAFE_HOTEL_COVER = '/images/nav-hotel.png'
 
 function normalizeText(value = '') {
   return String(value || '').trim()
@@ -25,6 +23,11 @@ function getDisplayCity(source) {
   const province = trimRegionSuffix(source.province)
   const displayName = trimRegionSuffix(source.displayName || source.label || '')
   return city || district || province || displayName || '兰州'
+}
+
+function buildDisplayPrice(price) {
+  const value = Number(price || 0)
+  return value > 0 ? `¥${value}起` : '价格待定'
 }
 
 Page({
@@ -59,11 +62,12 @@ Page({
         .orderBy('sort', 'asc')
         .get()
 
-      const hotelList = (res.data || []).map((item) => ({
+      const hotelList = await Promise.all((res.data || []).map(async (item) => ({
         ...item,
         sourceType: item.sourceType || 'demo',
-        cover: normalizeCover(item.cover),
-      }))
+        cover: await resolveMediaSource(item.cover, SAFE_HOTEL_COVER),
+        displayPrice: buildDisplayPrice(item.price),
+      })))
 
       this.setData({
         hotelList,
@@ -76,6 +80,7 @@ Page({
       })
     }
   },
+
   openHotelDetail(e) {
     const id = e.currentTarget.dataset.id
     if (!id) return

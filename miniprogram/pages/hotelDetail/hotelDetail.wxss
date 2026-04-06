@@ -27,6 +27,25 @@
   color: #1f2a1f;
 }
 
+.titleRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.titleRow .title {
+  flex: 1;
+  min-width: 0;
+}
+
+.titleMeta {
+  flex-shrink: 0;
+  font-size: 24rpx;
+  line-height: 1.4;
+  color: #8ea08b;
+}
+
 .summary {
   margin-top: 18rpx;
   font-size: 30rpx;

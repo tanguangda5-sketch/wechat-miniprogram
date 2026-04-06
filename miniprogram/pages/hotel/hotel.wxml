@@ -20,13 +20,14 @@
       wx:key="_id"
       class="hotelCard"
       data-id="{{item._id}}"
-      bindtap="openHotelDetail">
+      bindtap="openHotelDetail"
+    >
       <image class="hotelImg" src="{{item.cover}}" mode="aspectFill"></image>
 
       <view class="hotelBody">
         <view class="hotelName">{{item.name}}</view>
 
-        <view class="scoreRow">
+        <view class="scoreRow" wx:if="{{Number(item.score) > 0}}">
           <text class="score">{{item.score}}分</text>
           <text class="comment">{{item.commentCount}}评论</text>
         </view>
@@ -38,7 +39,7 @@
         </view>
 
         <view class="priceRow">
-          <text class="price">¥{{item.price}}起</text>
+          <text class="price">{{item.displayPrice}}</text>
         </view>
       </view>
     </view>

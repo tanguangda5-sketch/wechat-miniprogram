@@ -13,7 +13,10 @@
   </swiper>
 
   <view class="content">
-    <view class="title">{{detail.name || detail.title}}</view>
+    <view class="titleRow">
+      <view class="title">{{detail.name || detail.title}}</view>
+      <view class="titleMeta" wx:if="{{detail.titleScoreText}}">{{detail.titleScoreText}}</view>
+    </view>
     <view class="summary" wx:if="{{detail.summary}}">{{detail.summary}}</view>
 
     <view class="tagWrap" wx:if="{{detail.tags.length}}">
@@ -26,14 +29,6 @@
         <view class="infoValue">{{detail.locationText}}</view>
         <view class="infoSub" wx:if="{{detail.addressText}}">{{detail.addressText}}</view>
         <view class="infoSub" wx:if="{{detail.regionText}}">{{detail.regionText}}</view>
-      </view>
-      <view class="infoCard">
-        <view class="infoLabel">{{text.price}}</view>
-        <view class="infoValue priceText">{{detail.priceText}}</view>
-      </view>
-      <view class="infoCard">
-        <view class="infoLabel">{{text.score}}</view>
-        <view class="infoValue">{{detail.scoreText}}</view>
       </view>
     </view>
 

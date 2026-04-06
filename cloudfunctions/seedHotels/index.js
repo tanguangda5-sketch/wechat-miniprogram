@@ -6,6 +6,12 @@ const db = cloud.database()
 const CLOUD_PREFIX =
   "cloud://cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845/hotels"
 
+const LEGACY_DELETE_KEYS = [
+  "hotel-lz-yunqi-homestay",
+  "hotel-shanye-courtyard-inn",
+  "hotel-rural-holiday-resort"
+]
+
 function buildHotelAssets(seedKey) {
   return {
     cover: `${CLOUD_PREFIX}/covers/${seedKey}.jpg`,
@@ -20,84 +26,111 @@ function buildHotelAssets(seedKey) {
 
 const hotels = [
   {
-    seedKey: "hotel-lz-yunqi-homestay",
-    name: "兰州云栖民宿",
-    title: "兰州云栖民宿",
-    summary: "近兰州大学榆中校区的轻居型品质民宿，适合亲友出行、考试陪读和周末短住。",
-    desc: "整体风格干净温和，兼顾居住舒适度与出行便利性，适合来校探访、家庭入住和差旅短住。",
+    seedKey: "hotel-lz-shunshun-sunshine-homestay",
+    name: "兰州顺顺阳光民宿",
+    title: "兰州顺顺阳光民宿",
+    summary: "位于兰州皋兰县的家庭式民宿，房源信息显示主打观景露台、可做饭、可投影和可泡澡，适合短住和朋友结伴入住。",
+    desc: "民宿为整套房源，房源信息显示2018年开业，适合偏生活化、自助式入住需求。",
     description:
-      "兰州云栖民宿位于榆中校区周边生活圈，以安静休息、家庭入住和短途停留为核心体验。空间设计简洁温暖，适合亲友探访、考试陪读、家庭周末出行等场景，整体强调住得舒服、到达方便、价格友好。",
+      "兰州顺顺阳光民宿以整套房源出租为主，房源信息显示的核心卖点包括观景露台、可做饭、可投影、可泡澡。当前页面以已核实的基础信息为主，适合短住休闲和朋友结伴入住。",
     province: "甘肃省",
     city: "兰州市",
-    district: "榆中县",
-    address: "兰州市榆中县兰州大学榆中校区周边生活圈",
-    locationText: "近兰州大学榆中校区",
-    distanceText: "距您直线 1.2 公里",
-    score: 4.8,
-    commentCount: 128,
-    price: 188,
-    priceFrom: 188,
-    tags: ["免费停车", "家庭房", "行李寄存"],
-    roomTypes: ["舒适大床房", "温馨双床房", "家庭亲子房"],
-    facilities: ["免费停车", "行李寄存", "无线网络", "独立卫浴", "空调热水", "基础洗护"],
-    highlights: ["近高校片区", "家庭入住友好", "短住方便", "性价比较高"],
-    suitableGroups: ["亲子家庭", "探访学生家长", "朋友结伴", "轻差旅用户"],
-    sourceType: "demo",
+    district: "皋兰县",
+    address: "甘肃省兰州市皋兰县肽景天下B1段105",
+    locationText: "皋兰县肽景天下",
+    distanceText: "距截图定位点约1.7公里",
+    score: 0,
+    commentCount: 0,
+    price: 0,
+    priceFrom: 0,
+    tags: ["观景露台", "可做饭", "可投影", "可泡澡"],
+    roomTypes: ["整套民宿"],
+    facilities: ["观景露台", "厨房", "投影", "浴缸/泡澡"],
+    highlights: ["房源信息显示2018年开业", "整套房源出租", "偏家庭式自助入住", "适合短住休闲"],
+    suitableGroups: ["朋友结伴", "情侣", "短住游客"],
+    sourceType: "real",
     sort: 1,
     status: true
   },
   {
-    seedKey: "hotel-shanye-courtyard-inn",
-    name: "山野庭院客栈",
-    title: "山野庭院客栈",
-    summary: "带庭院与观景房的山野休闲客栈，适合放空、拍照和短途慢住。",
-    desc: "主打自然景观与静谧氛围，整体定位偏轻度假，适合情侣和好友周末放松。",
+    seedKey: "hotel-yongjing-liujiaxia-elegant-homestay",
+    name: "玩转刘家峡雅致民宿",
+    title: "玩转刘家峡雅致民宿(临夏回族自治州店)",
+    summary: "位于永靖县的整套房源民宿，房型为1室1厨1卫、50平方米、可住2人，适合去刘家峡周边短住。",
+    desc: "房源信息显示该民宿开业时间为2022-03-06，房型为整套房屋，适合两人入住。",
     description:
-      "山野庭院客栈以庭院、公区和观景房为核心卖点，强调安静、自然和松弛感。住客可以在庭院休息、清晨看景、夜晚放空，适合周末换个环境慢下来，也适合情侣、闺蜜好友结伴入住。",
+      "玩转刘家峡雅致民宿位于甘肃省临夏回族自治州永靖县，房型为整套房屋，1室1厨1卫，建筑面积约50平方米，有窗，可住2人，参考价格为215元起。整体更适合两人结伴前往刘家峡周边短住。",
     province: "甘肃省",
-    city: "兰州市",
-    district: "榆中县",
-    address: "兰州市榆中县近郊山野休闲片区",
-    locationText: "近郊山野观景片区",
-    distanceText: "距您直线 2.1 公里",
-    score: 4.7,
-    commentCount: 96,
-    price: 236,
-    priceFrom: 236,
-    tags: ["免费WiFi", "观景房", "早餐"],
-    roomTypes: ["山景大床房", "庭院观景房", "双床休闲房"],
-    facilities: ["免费WiFi", "早餐", "观景房", "庭院休闲区", "独立卫浴", "公共茶饮区"],
-    highlights: ["庭院氛围感强", "适合慢住放空", "观景体验好", "拍照出片"],
-    suitableGroups: ["情侣", "闺蜜好友", "周末放松人群", "喜欢安静环境的住客"],
-    sourceType: "demo",
+    city: "临夏回族自治州",
+    district: "永靖县",
+    address: "甘肃省临夏回族自治州永靖县安置区祁山路1号楼1单元503室",
+    locationText: "永靖县安置区祁山路",
+    distanceText: "",
+    score: 0,
+    commentCount: 0,
+    price: 215,
+    priceFrom: 215,
+    tags: ["整套房屋", "1室1厨1卫", "50㎡", "有窗"],
+    roomTypes: ["整套房屋·1室1厨1卫"],
+    facilities: ["厨房", "独立卫浴", "有窗", "整套入住"],
+    highlights: ["房源信息显示2022-03-06开业", "整套房源更适合短住", "可住2人", "价格信息明确"],
+    suitableGroups: ["情侣", "朋友结伴", "两人出游"],
+    sourceType: "real",
     sort: 2,
     status: true
   },
   {
-    seedKey: "hotel-rural-holiday-resort",
-    name: "田园假日酒店",
-    title: "田园假日酒店",
-    summary: "靠近农旅体验中心的田园度假型酒店，适合亲子出游与周末家庭度假。",
-    desc: "面向家庭和亲子客群，强调住得舒服、吃得方便、带娃省心的轻度假体验。",
+    seedKey: "hotel-weizi-courtyard-weipo-xinxu",
+    name: "魏紫别院",
+    title: "魏紫别院(魏坡新序店)",
+    summary: "位于洛阳孟津区魏坡新序附近的高档民宿，院落感强，适合亲子出游、休闲度假和会议团建。",
+    desc: "酒店信息显示该民宿2021年开业，位于魏家坡古民居旅游服务中心附近，为高档型民宿。",
     description:
-      "田园假日酒店以家庭度假和亲子入住为主要场景，靠近农旅体验中心，适合把住宿和采摘、乡野体验、亲子互动一起安排。整体空间更偏明亮开阔的度假风格，适合自驾出行和周末短途休闲。",
-    province: "甘肃省",
-    city: "兰州市",
-    district: "榆中县",
-    address: "兰州市榆中县农旅体验中心周边",
-    locationText: "近农旅体验中心",
-    distanceText: "距您直线 3.6 公里",
-    score: 4.9,
-    commentCount: 205,
-    price: 299,
-    priceFrom: 299,
-    tags: ["亲子房", "免费停车", "餐厅"],
-    roomTypes: ["亲子主题房", "家庭套房", "舒适双床房"],
-    facilities: ["免费停车", "酒店餐厅", "亲子房", "无线网络", "前台咨询", "家庭出游友好"],
-    highlights: ["近农旅体验中心", "亲子入住方便", "餐饮配套完整", "适合家庭周末度假"],
-    suitableGroups: ["亲子家庭", "三口之家", "周末短途度假用户", "自驾用户"],
-    sourceType: "demo",
+      "魏紫别院(魏坡新序店)位于河南省洛阳市孟津区朝阳镇卫坡村九组魏家坡古民居旅游服务中心向南200米，2021年开业，具备免费停车、早餐、餐饮与活动空间等配套，常见房型参考价格约467元起，并带有茶厅、多功能厅、会议厅等服务标签，整体更适合休闲度假、亲子出游及小型团建活动。",
+    province: "河南省",
+    city: "洛阳市",
+    district: "孟津区",
+    address: "河南省洛阳市孟津区朝阳镇卫坡村九组魏家坡古民居旅游服务中心向南200米",
+    locationText: "魏坡新序",
+    distanceText: "",
+    score: 4.8,
+    commentCount: 31,
+    price: 467,
+    priceFrom: 467,
+    tags: ["高档民宿", "叫车服务", "茶厅", "多功能厅", "会议厅"],
+    roomTypes: ["高级大床房", "高级双床房", "高级庭院大床房"],
+    facilities: ["免费停车", "早餐", "餐厅", "茶厅", "多功能厅", "会议厅", "客房WiFi"],
+    highlights: ["2021年开业", "靠近魏坡新序", "院落景观感较强", "适合亲子和小团体入住"],
+    suitableGroups: ["亲子家庭", "情侣", "朋友结伴", "团建用户"],
+    sourceType: "real",
     sort: 3,
+    status: true
+  },
+  {
+    seedKey: "hotel-yongjing-centennial-zaoyuan",
+    name: "永靖百年枣园民宿",
+    title: "永靖百年枣园民宿",
+    summary: "位于永靖太极镇大川村的度假型民宿项目，整体环境较新，适合自驾度假、家庭出游和湖区周边休闲住宿。",
+    desc: "酒店信息显示该民宿2025年开业，位于太极镇大川村八社001号，整体偏园区型度假住宿。",
+    description:
+      "永靖百年枣园民宿位于甘肃省临夏回族自治州永靖县太极镇大川村八社001号，具备免费停车、宠物友好、餐厅和叫车服务等配套，常见房型参考价格约788元起，并提供亲子房、大床房、双床房等选择，整体属于偏度假型、园区型的乡野住宿项目。",
+    province: "甘肃省",
+    city: "临夏回族自治州",
+    district: "永靖县",
+    address: "甘肃省临夏回族自治州永靖县太极镇大川村八社001号",
+    locationText: "太极镇大川村百年枣园",
+    distanceText: "",
+    score: 4.7,
+    commentCount: 31,
+    price: 788,
+    priceFrom: 788,
+    tags: ["宠物友好", "叫车服务", "餐厅", "客房WiFi"],
+    roomTypes: ["云曼山合（一室一厅）", "大床房", "双床房"],
+    facilities: ["免费停车", "宠物友好", "餐厅", "客房WiFi", "园区休闲空间"],
+    highlights: ["2025年开业", "园区型度假住宿", "适合自驾出游", "可联动刘家峡及太极岛周边游玩"],
+    suitableGroups: ["亲子家庭", "自驾游客", "朋友结伴", "度假用户"],
+    sourceType: "real",
+    sort: 4,
     status: true
   }
 ].map((item) => ({
@@ -140,8 +173,24 @@ async function upsertBySeedKey(collectionName, item) {
   return "created"
 }
 
+async function deleteLegacyHotels(collectionName, seedKeys = []) {
+  const collection = db.collection(collectionName)
+  let deleted = 0
+
+  for (const seedKey of seedKeys) {
+    const query = await collection.where({ seedKey }).get()
+    for (const item of query.data || []) {
+      await collection.doc(item._id).remove()
+      deleted += 1
+    }
+  }
+
+  return deleted
+}
+
 exports.main = async () => {
   const hotelStats = { created: 0, updated: 0 }
+  const deleted = await deleteLegacyHotels("hotels", LEGACY_DELETE_KEYS)
 
   for (const item of hotels) {
     const action = await upsertBySeedKey("hotels", item)
@@ -150,6 +199,7 @@ exports.main = async () => {
 
   return {
     success: true,
-    hotels: hotelStats
+    hotels: hotelStats,
+    deleted
   }
 }

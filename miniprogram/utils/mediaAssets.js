@@ -35,6 +35,14 @@ const ACTIVITY_MEDIA_MAP = {
     aliases: ['什川', '古梨园', '皋兰'],
     localCover: '/images/nav-academy.png',
   },
+  'lz-qilihe-shenjialing-red-green-fusion': {
+    aliases: ['沈家岭', '红绿融合', '红色研学'],
+    localCover: '/images/nav-academy.png',
+  },
+  'lz-bali-huazhaizi-peach-garden': {
+    aliases: ['花寨子', '世外桃园', '鲜桃采摘'],
+    localCover: '/images/nav-academy.png',
+  },
   'tianshui-qinan-fruit-pick-day': {
     aliases: ['天水', '秦安', '果园'],
     localCover: '/images/activities/tianshui-qinan-fruit-pick-day.jpg',
