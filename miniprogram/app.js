@@ -8,6 +8,35 @@ const RESET_KEYS = [
   'recentRegionList',
 ]
 
+function getSettingAsync() {
+  return new Promise((resolve, reject) => {
+    wx.getSetting({
+      success: resolve,
+      fail: reject,
+    })
+  })
+}
+
+function getLocationAsync(timeout = 8000) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error('getLocation timeout'))
+    }, timeout)
+
+    wx.getLocation({
+      type: 'gcj02',
+      success: (res) => {
+        clearTimeout(timer)
+        resolve(res)
+      },
+      fail: (err) => {
+        clearTimeout(timer)
+        reject(err)
+      },
+    })
+  })
+}
+
 App({
   globalData: {
     userInfo: null,
@@ -23,6 +52,10 @@ App({
     this.bootstrap(options)
   },
 
+  onShow() {
+    this.refreshUserLocationCache()
+  },
+
   async bootstrap(options = {}) {
     try {
       const targetUrl = this.getLaunchTarget()
@@ -34,6 +67,36 @@ App({
       }
     } catch (err) {
       console.error('bootstrap failed', err)
+    }
+  },
+
+  async refreshUserLocationCache() {
+    try {
+      const setting = await getSettingAsync()
+      if (!setting || !setting.authSetting || !setting.authSetting['scope.userLocation']) {
+        return
+      }
+
+      const locationRes = await getLocationAsync()
+      const userLocation = {
+        latitude: locationRes.latitude,
+        longitude: locationRes.longitude,
+      }
+
+      wx.setStorageSync('userLocation', userLocation)
+
+      const currentUserInfo = this.globalData.userInfo || wx.getStorageSync(USER_INFO_KEY)
+      if (currentUserInfo && currentUserInfo.openid) {
+        const nextUserInfo = {
+          ...currentUserInfo,
+          userLocation,
+          locationAuthorized: true,
+        }
+        this.globalData.userInfo = nextUserInfo
+        wx.setStorageSync(USER_INFO_KEY, nextUserInfo)
+      }
+    } catch (err) {
+      console.warn('refreshUserLocationCache failed', err)
     }
   },
 
