@@ -18,7 +18,11 @@ import {
   buildPlatformGroundingContext,
   buildConversationWorkflow,
 } from "./utils.js";
-import { buildDirectAnswer } from "./direct-answer.js";
+import {
+  buildDirectAnswer,
+  buildLocationQueryResult,
+  buildWeatherQueryResult,
+} from "./direct-answer.js";
 
 dotenvx.config();
 
@@ -434,6 +438,45 @@ async function handleGuideCustomization(req, res) {
   }
 }
 
+async function handleWeatherQuery(req, res) {
+  try {
+    const body = req.body || {};
+    const result = await buildWeatherQueryResult({
+      question: String(body.question || "").trim(),
+      contextPayload: body.contextPayload || {},
+    });
+
+    res.json(result);
+  } catch (error) {
+    console.error("[agent-yuxiaohe] weather-query failed", error);
+    res.status(500).json({
+      success: false,
+      subType: "weather",
+      answer: "实时天气暂不可用，刚才查询天气服务时失败了。你可以稍后再试。",
+      error: error?.message || String(error),
+    });
+  }
+}
+
+async function handleLocationQuery(req, res) {
+  try {
+    const body = req.body || {};
+    const result = await buildLocationQueryResult({
+      contextPayload: body.contextPayload || {},
+    });
+
+    res.json(result);
+  } catch (error) {
+    console.error("[agent-yuxiaohe] location-query failed", error);
+    res.status(500).json({
+      success: false,
+      subType: "location",
+      answer: "位置未获取成功。你可以先开启定位权限，或者直接告诉我你所在的城市。",
+      error: error?.message || String(error),
+    });
+  }
+}
+
 const app = express();
 
 app.use((req, res, next) => {
@@ -449,6 +492,10 @@ app.post("/send-message", express.json(), handleBotSendMessage);
 app.post("/api/buddy-match", express.json(), handleBuddyMatch);
 
 app.post("/api/guide-customization", express.json(), handleGuideCustomization);
+
+app.post("/api/weather-query", express.json(), handleWeatherQuery);
+
+app.post("/api/location-query", express.json(), handleLocationQuery);
 
 app.post(
   "/v1/aibot/bots/:agentId/send-message",

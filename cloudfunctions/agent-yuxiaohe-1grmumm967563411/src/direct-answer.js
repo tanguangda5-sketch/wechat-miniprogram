@@ -314,28 +314,114 @@ function buildWeatherAnswer(locationLabel, weatherData) {
 }
 
 async function buildWeatherDirectResponse(question, contextPayload = {}) {
+  const result = await buildWeatherQueryResult({
+    question,
+    contextPayload,
+  });
+  return result.answer;
+}
+
+async function buildWhereAmIDirectResponse(contextPayload = {}) {
+  const result = await buildLocationQueryResult({
+    contextPayload,
+  });
+  return result.answer;
+}
+
+export async function buildWeatherQueryResult({
+  question = "",
+  contextPayload = {},
+} = {}) {
   const resolved = await resolveLocation(contextPayload, question);
   if (!resolved) {
-    return "实时天气暂不可用，因为我还没能准确识别你要查询的地区。你可以直接说城市名，比如“兰州今天天气怎么样”。";
+    return {
+      success: false,
+      subType: "weather",
+      resolvedLocation: null,
+      weather: null,
+      answer: "实时天气暂不可用，因为我还没能准确识别你要查询的地区。你可以直接说城市名，比如“兰州今天天气怎么样”。",
+    };
   }
 
   if (!resolved.latitude || !resolved.longitude) {
-    return `我已经识别到你想问的大概地区是${resolved.label || "目标地区"}，但位置坐标还没拿到，所以实时天气暂不可用。你可以换一个更具体的区县名再试一次。`;
+    return {
+      success: false,
+      subType: "weather",
+      resolvedLocation: {
+        label: normalizeText(resolved.label),
+        province: normalizeText(resolved.province),
+        city: normalizeText(resolved.city),
+        district: normalizeText(resolved.district),
+        adcode: normalizeText(resolved.adcode),
+        latitude: normalizeText(resolved.latitude),
+        longitude: normalizeText(resolved.longitude),
+      },
+      weather: null,
+      answer: `我已经识别到你想问的大概地区是${resolved.label || "目标地区"}，但位置坐标还没拿到，所以实时天气暂不可用。你可以换一个更具体的区县名再试一次。`,
+    };
   }
 
   try {
     const weatherData = await fetchOpenMeteoWeather(resolved.latitude, resolved.longitude);
     const locationLabel = normalizeText(resolved.label) || "你当前所在地区";
-    return buildWeatherAnswer(locationLabel, weatherData);
+    const current = weatherData?.current || {};
+    const daily = weatherData?.daily || {};
+
+    return {
+      success: true,
+      subType: "weather",
+      resolvedLocation: {
+        label: normalizeText(resolved.label),
+        province: normalizeText(resolved.province),
+        city: normalizeText(resolved.city),
+        district: normalizeText(resolved.district),
+        adcode: normalizeText(resolved.adcode),
+        latitude: normalizeText(resolved.latitude),
+        longitude: normalizeText(resolved.longitude),
+      },
+      weather: {
+        weatherText: mapWeatherCode(current.weather_code),
+        temperature: formatNumber(current.temperature_2m),
+        apparentTemperature: formatNumber(current.apparent_temperature),
+        minTemperature: Array.isArray(daily.temperature_2m_min) ? formatNumber(daily.temperature_2m_min[0]) : "",
+        maxTemperature: Array.isArray(daily.temperature_2m_max) ? formatNumber(daily.temperature_2m_max[0]) : "",
+        precipitationProbability: Array.isArray(daily.precipitation_probability_max)
+          ? formatNumber(daily.precipitation_probability_max[0])
+          : "",
+        windSpeed: formatNumber(current.wind_speed_10m),
+      },
+      answer: buildWeatherAnswer(locationLabel, weatherData),
+    };
   } catch (error) {
-    return "实时天气暂不可用，刚才查询天气服务时失败了。你可以稍后再试。";
+    return {
+      success: false,
+      subType: "weather",
+      resolvedLocation: {
+        label: normalizeText(resolved.label),
+        province: normalizeText(resolved.province),
+        city: normalizeText(resolved.city),
+        district: normalizeText(resolved.district),
+        adcode: normalizeText(resolved.adcode),
+        latitude: normalizeText(resolved.latitude),
+        longitude: normalizeText(resolved.longitude),
+      },
+      weather: null,
+      answer: "实时天气暂不可用，刚才查询天气服务时失败了。你可以稍后再试。",
+    };
   }
 }
 
-async function buildWhereAmIDirectResponse(contextPayload = {}) {
+export async function buildLocationQueryResult({
+  contextPayload = {},
+} = {}) {
   const resolved = await resolveLocation(contextPayload, "");
   if (!resolved) {
-    return "位置未获取成功。你可以先开启定位权限，或者直接告诉我你所在的城市。";
+    return {
+      success: false,
+      subType: "location",
+      resolvedLocation: null,
+      answer: "当前位置信息暂时不可用，请稍后再试。你可以先开启定位权限，或者直接告诉我你所在的城市。",
+    };
   }
 
   const label =
@@ -343,11 +429,24 @@ async function buildWhereAmIDirectResponse(contextPayload = {}) {
     [resolved.province, resolved.city, resolved.district].filter(Boolean).join("") ||
     "你当前所在地区";
 
-  return `我目前判断你大概在${label}。如果你想，我也可以继续帮你查这个地区的实时天气。`;
+  return {
+    success: true,
+    subType: "location",
+    resolvedLocation: {
+      label: normalizeText(label),
+      province: normalizeText(resolved.province),
+      city: normalizeText(resolved.city),
+      district: normalizeText(resolved.district),
+      adcode: normalizeText(resolved.adcode),
+      latitude: normalizeText(resolved.latitude),
+      longitude: normalizeText(resolved.longitude),
+    },
+    answer: `我目前判断你大概在${label}。如果你想，我也可以继续帮你查这个地区的实时天气。`,
+  };
 }
 
 function buildBuddyMissingFieldResponse(workflow = {}) {
-  return workflow?.missingField?.ask || "我先帮你把这次找搭子的信息收清楚，你更想找什么样的同行搭子？";
+  return workflow?.missingField?.ask || "我先帮你把这次找搭子的信息收清楚，你更想找什么样的同伴？";
 }
 
 function buildBuddyNoCandidateResponse() {
