@@ -41,10 +41,16 @@ async function getUserByOpenid(openid) {
 async function ensureWechatUser(openid) {
   const existingUser = await getUserByOpenid(openid)
   if (existingUser) {
-    if (existingUser.hasBoundPhone === false) {
+    const patch = {}
+
+    if (!existingUser.role) {
+      patch.role = 'user'
+    }
+
+    if (Object.keys(patch).length) {
       await db.collection('users').doc(existingUser._id).update({
         data: {
-          hasBoundPhone: true,
+          ...patch,
           updatedAt: db.serverDate(),
         },
       })

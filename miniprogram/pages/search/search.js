@@ -1,4 +1,4 @@
-﻿const DEFAULT_HINTS = [
+const DEFAULT_HINTS = [
   "\u4eb2\u5b50\u91c7\u6458",
   "\u975e\u9057\u4f53\u9a8c",
   "\u5468\u672b\u4e00\u65e5\u6e38",

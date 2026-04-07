@@ -1,0 +1,43 @@
+<view class="page" wx:if="{{preview}}">
+  <view class="sectionCard addressCard" bindtap="chooseAddress">
+    <block wx:if="{{address}}">
+      <view class="receiverRow">
+        <text class="receiver">{{address.receiverName}}</text>
+        <text class="phone">{{address.receiverPhone}}</text>
+      </view>
+      <view class="addressText">{{address.province}}{{address.city}}{{address.district}}{{address.detailAddress}}</view>
+    </block>
+    <view wx:else class="emptyAddress">请选择收货地址</view>
+  </view>
+
+  <view class="sectionCard">
+    <view class="sectionTitle">商品清单</view>
+    <view wx:for="{{preview.items}}" wx:key="productId" class="goodsItem">
+      <image class="goodsCover" src="{{item.cover}}" mode="aspectFill"></image>
+      <view class="goodsBody">
+        <view class="goodsTitle">{{item.title}}</view>
+        <view class="goodsMeta">单价 {{item.unitPriceText}} x {{item.quantity}}</view>
+      </view>
+      <view class="goodsPrice">{{item.subtotalText}}</view>
+    </view>
+  </view>
+
+  <view class="sectionCard">
+    <view class="sectionTitle">买家备注</view>
+    <textarea class="remarkInput" value="{{remark}}" bindinput="onRemarkInput" placeholder="选填，可告诉商家你的补充需求" />
+  </view>
+
+  <view class="sectionCard amountCard">
+    <view class="amountRow"><text>商品金额</text><text>{{preview.goodsAmountText}}</text></view>
+    <view class="amountRow"><text>运费</text><text>{{preview.shippingFeeText}}</text></view>
+    <view class="amountRow total"><text>应付金额</text><text>{{preview.payAmountText}}</text></view>
+  </view>
+
+  <view class="bottomBar">
+    <view class="payBox">
+      <view class="payLabel">合计</view>
+      <view class="payValue">{{preview.payAmountText}}</view>
+    </view>
+    <button class="submitBtn" loading="{{submitting}}" bindtap="submitOrder">提交并支付</button>
+  </view>
+</view>

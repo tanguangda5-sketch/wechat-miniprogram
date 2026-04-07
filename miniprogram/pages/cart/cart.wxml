@@ -1,1 +1,45 @@
-<view style="padding: 24rpx;">购物车（占位）</view>
+<view class="page">
+  <view wx:if="{{empty}}" class="emptyWrap">
+    <view class="emptyTitle">购物车还是空的</view>
+    <view class="emptyDesc">先把想买的商品加入购物车，再来结算吧。</view>
+    <button class="emptyBtn" bindtap="goMall">去逛商城</button>
+  </view>
+
+  <block wx:else>
+    <view wx:for="{{groups}}" wx:key="merchantOpenid" class="merchantCard">
+      <view class="merchantHead">{{item.merchantName}}</view>
+
+      <view wx:for="{{item.items}}" wx:key="_id" class="cartItem">
+        <view class="checkBox {{item.selected ? 'checked' : ''}}" data-id="{{item._id}}" data-selected="{{item.selected}}" bindtap="toggleSelect"></view>
+
+        <image class="cover" src="{{item.productSnapshot.cover}}" mode="aspectFill"></image>
+
+        <view class="itemBody">
+          <view class="title">{{item.productSnapshot.title}}</view>
+          <view class="metaRow">
+            <text class="unitPrice">{{item.unitPriceText}}</text>
+            <text class="stock {{item.isPurchasable ? '' : 'danger'}}">{{item.isPurchasable ? '可结算' : '暂不可结算'}}</text>
+          </view>
+          <view class="footerRow">
+            <text class="subtotal">{{item.subtotalText}}</text>
+            <view class="stepper">
+              <button class="stepBtn" bindtap="changeQuantity" data-id="{{item._id}}" data-quantity="{{item.quantity}}" data-delta="-1" disabled="{{item.quantity <= 1}}">-</button>
+              <view class="qty">{{item.quantity}}</view>
+              <button class="stepBtn" bindtap="changeQuantity" data-id="{{item._id}}" data-quantity="{{item.quantity}}" data-delta="1" disabled="{{!item.isPurchasable || item.quantity >= item.productSnapshot.stock}}">+</button>
+            </view>
+          </view>
+        </view>
+
+        <view class="removeBtn" data-id="{{item._id}}" bindtap="removeItem">删除</view>
+      </view>
+    </view>
+
+    <view class="bottomBar">
+      <view class="summary">
+        <view class="summaryLabel">已选 {{selectedCount}} 件</view>
+        <view class="summaryValue">{{summaryText}}</view>
+      </view>
+      <button class="checkoutBtn" bindtap="goCheckout" disabled="{{selectedCount === 0}}">去结算</button>
+    </view>
+  </block>
+</view>

@@ -1,4 +1,4 @@
-﻿.page {
+.page {
   min-height: 100vh;
   padding: 120rpx 32rpx 32rpx;
   background: linear-gradient(180deg, #f6efe2 0%, #eef6ea 100%);

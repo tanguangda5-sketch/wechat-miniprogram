@@ -1,0 +1,162 @@
+.page {
+  min-height: 100vh;
+  background: #f6faf4;
+  padding: 24rpx 24rpx 160rpx;
+  box-sizing: border-box;
+}
+
+.sectionCard {
+  margin-bottom: 20rpx;
+  padding: 24rpx;
+  border-radius: 24rpx;
+  background: #fff;
+  box-shadow: 0 12rpx 30rpx rgba(55, 42, 26, 0.06);
+}
+
+.statusRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20rpx;
+}
+
+.statusTitle {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1f2a1f;
+}
+
+.countdown {
+  font-size: 24rpx;
+  color: #57984a;
+}
+
+.amountMain {
+  margin-top: 18rpx;
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #57984a;
+}
+
+.metaLine {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: #8b94a1;
+  line-height: 1.6;
+}
+
+.sectionTitle {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1f2a1f;
+}
+
+.receiverRow {
+  display: flex;
+  gap: 18rpx;
+  margin-top: 16rpx;
+}
+
+.receiver {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1f2a1f;
+}
+
+.phone {
+  font-size: 26rpx;
+  color: #667566;
+}
+
+.addressText {
+  margin-top: 14rpx;
+  font-size: 28rpx;
+  line-height: 1.7;
+  color: #233123;
+}
+
+.goodsItem {
+  display: flex;
+  gap: 18rpx;
+  align-items: center;
+  margin-top: 22rpx;
+}
+
+.goodsCover {
+  width: 132rpx;
+  height: 132rpx;
+  border-radius: 18rpx;
+  background: #eef5ea;
+  flex-shrink: 0;
+}
+
+.goodsBody {
+  min-width: 0;
+  flex: 1;
+}
+
+.goodsTitle {
+  font-size: 28rpx;
+  color: #1f2a1f;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.goodsMeta {
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: #8b94a1;
+}
+
+.goodsPrice {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #57984a;
+}
+
+.amountRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 18rpx;
+  font-size: 28rpx;
+  color: #233123;
+}
+
+.amountRow.total {
+  font-weight: 700;
+  color: #1f2a1f;
+}
+
+.bottomBar {
+  position: fixed;
+  left: 24rpx;
+  right: 24rpx;
+  bottom: calc(env(safe-area-inset-bottom) + 20rpx);
+  display: flex;
+  justify-content: flex-end;
+  gap: 16rpx;
+}
+
+.actionBtn {
+  min-width: 220rpx;
+  height: 84rpx;
+  line-height: 84rpx;
+  border-radius: 999rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.actionBtn.ghost {
+  background: #fff;
+  color: #667566;
+}
+
+.actionBtn.primary {
+  background: #57984a;
+  color: #fff;
+}
+
+.actionBtn::after {
+  border: none;
+}

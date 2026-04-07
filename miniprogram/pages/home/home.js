@@ -8,31 +8,31 @@ const { buildActivityCoverTags } = require('../../utils/activityCoverTags')
 const SAFE_PRODUCT_COVER = '/images/default-goods-image.png'
 
 const DEFAULT_SEARCH_HINTS = [
-  '亲子采摘',
-  '非遗体验',
-  '周末一日游',
-  '田园花海',
-  '古村漫游',
-  '乡味特产',
-  '节气礼盒',
+  '采摘体验活动',
+  '周边乡村旅游',
+  '当季花海推荐',
+  '农旅研学路线',
+  '精品民宿推荐',
+  '非遗民俗体验',
+  '特色农产品',
 ]
 
 const NAV_ITEMS = [
   {
     key: 'fun',
-    title: '乡野乐事',
+    title: '乡野趣玩',
     icon: '/images/nav-fun.svg',
     action: 'goRuralFun',
   },
   {
     key: 'academy',
-    title: '农旅宝典',
+    title: '文旅课堂',
     icon: '/images/nav-academy.png',
     action: 'goAcademy',
   },
   {
     key: 'mall',
-    title: '乡味商城',
+    title: '乡村好物',
     icon: '/images/nav-mall.png',
     action: 'goMall',
   },
@@ -50,114 +50,114 @@ const REGION_THEME_LIBRARY = [
     themes: [
       {
         id: 'rose',
-        title: '苦水玫瑰季',
+        title: '玫瑰花海主题',
         period: '当季限定',
-        description: '围绕玫瑰花田、玫瑰手作和玫瑰风味商品展开的乡野限定主题。',
-        activityKeywords: ['玫瑰', '花海', '采摘', '手作', '乡村'],
-        products: ['玫瑰酸奶', '干玫瑰', '玫瑰酱', '玫瑰精油', '玫瑰香薰'],
+        description: '围绕玫瑰观赏、花田漫游和乡村休闲展开的特色活动。',
+        activityKeywords: ['玫瑰', '花海', '体验', '乡村'],
+        products: ['玫瑰花茶', '玫瑰花酱', '鲜花饼', '手作礼盒', '花香伴手礼'],
       },
       {
         id: 'lily',
-        title: '百合丰收季',
-        period: '时令限定',
-        description: '主打百合采挖、百合食养和百合伴手礼的在地主题。',
-        activityKeywords: ['百合', '采摘', '乡味', '手作', '康养'],
-        products: ['鲜百合', '百合干', '百合银耳羹', '百合礼盒', '百合茶'],
+        title: '百合赏花主题',
+        period: '花期限定',
+        description: '以百合花田观景、田园拍照和乡野漫游为核心的轻度体验活动。',
+        activityKeywords: ['百合', '赏花', '拍照', '乡村', '漫游'],
+        products: ['百合礼盒', '百合花茶', '百合甜品', '百合糕点', '百合伴手礼'],
       },
       {
         id: 'farm',
-        title: '黄河田园周末',
-        period: '周末限定',
-        description: '适合亲子与轻度假人群的近郊田园微度假主题。',
-        activityKeywords: ['亲子', '田园', '农旅', '草莓', '摄影'],
-        products: ['草莓礼盒', '手工果酱', '农家小米', '乡野点心'],
+        title: '田园采摘研学',
+        period: '周末精选',
+        description: '适合亲子和朋友同行的农事体验、采摘互动与田园休闲内容。',
+        activityKeywords: ['采摘', '田园', '研学', '亲子', '周末'],
+        products: ['草莓采摘', '果蔬礼盒', '农场体验券', '手作课堂'],
       },
     ],
   },
   {
-    matchKeywords: ['天水', '秦安'],
+    matchKeywords: ['皋兰', '西固'],
     themes: [
       {
         id: 'fruit',
-        title: '果香采摘季',
+        title: '鲜果采摘主题',
         period: '当季限定',
-        description: '以果园采摘、乡村休闲和亲子互动为核心的丰收主题。',
-        activityKeywords: ['果园', '采摘', '亲子', '乡村'],
-        products: ['鲜果礼盒', '果酱', '果脯', '果汁', '果干'],
+        description: '围绕果园采摘、果蔬体验和家庭出游展开的轻松行程。',
+        activityKeywords: ['鲜果', '采摘', '亲子', '出游'],
+        products: ['鲜果礼盒', '果干零食', '水果果酱', '时令鲜果'],
       },
       {
         id: 'study',
-        title: '田园研学周',
-        period: '研学限定',
-        description: '适合家庭和学校出行的农事课堂与自然观察主题。',
-        activityKeywords: ['研学', '劳动', '课堂', '实践', '亲子'],
-        products: ['研学手册', '自然观察包', '文创笔记本', '乡土种子盒'],
+        title: '农耕研学主题',
+        period: '研学推荐',
+        description: '适合学校与家庭参与的农耕认知、手作课堂和田野观察活动。',
+        activityKeywords: ['研学', '农耕', '手作', '田野'],
+        products: ['研学套票', '手作材料包', '课程体验券', '农耕文创'],
       },
       {
         id: 'folk',
-        title: '乡味手作集',
-        period: '体验限定',
-        description: '突出地方风物、乡味制作和慢生活体验的文旅主题。',
-        activityKeywords: ['手作', '体验', '文旅', '乡味'],
-        products: ['手工点心', '乡味礼盒', '风味辣酱', '手作香包'],
+        title: '民俗文化主题',
+        period: '周末推荐',
+        description: '聚焦乡村节庆、民俗展示与文化体验的特色内容。',
+        activityKeywords: ['民俗', '文化', '节庆', '体验'],
+        products: ['民俗文创', '手工香包', '非遗手作', '节庆礼盒'],
       },
     ],
   },
   {
-    matchKeywords: ['甘南', '夏河', '玛曲'],
+    matchKeywords: ['新区', '高原', '永登'],
     themes: [
       {
         id: 'grassland',
-        title: '草原牧歌季',
-        period: '牧场限定',
-        description: '围绕草原牧场生活、帐篷露营和藏乡风情体验展开。',
-        activityKeywords: ['草原', '牧场', '露营', '乡村', '摄影'],
-        products: ['牦牛酸奶', '风干牛肉', '酥油茶', '草原奶贝'],
+        title: '草原休闲主题',
+        period: '夏秋推荐',
+        description: '适合避暑、露营和亲近自然的户外休闲活动。',
+        activityKeywords: ['草原', '露营', '休闲', '自然', '周末'],
+        products: ['露营茶点', '牧场礼盒', '户外野餐包', '草原文创'],
       },
       {
         id: 'folk',
-        title: '藏乡风物周',
-        period: '文化限定',
-        description: '结合民族文化、手作体验和草原风物的轻度假主题。',
-        activityKeywords: ['文旅', '手作', '体验', '摄影'],
-        products: ['藏纹香囊', '手工挂饰', '特色奶制品', '草原香薰'],
+        title: '村落文化主题',
+        period: '文化推荐',
+        description: '在乡村街巷和文化场景中感受手作、市集与地方故事。',
+        activityKeywords: ['村落', '文化', '市集', '体验'],
+        products: ['地方手作', '集市礼盒', '乡味糕点', '文化纪念品'],
       },
       {
         id: 'light',
-        title: '轻牧生活节',
-        period: '周末限定',
-        description: '适合城市游客体验牧场日常和慢生活节奏的主题。',
-        activityKeywords: ['康养', '乡村', '体验', '草原'],
-        products: ['牧场早餐包', '奶酪礼盒', '牧场文创杯', '野花蜂蜜'],
+        title: '轻户外主题',
+        period: '周末精选',
+        description: '以徒步、观景和乡村漫游为主的轻量化出游内容。',
+        activityKeywords: ['徒步', '观景', '乡村', '轻旅行'],
+        products: ['步道补给包', '轻食零食', '出游周边', '饮品礼盒'],
       },
     ],
   },
   {
-    matchKeywords: ['张掖', '陇南', '临夏'],
+    matchKeywords: ['安宁', '城关', '七里河'],
     themes: [
       {
         id: 'homestay',
-        title: '乡野栖居周',
-        period: '民宿限定',
-        description: '聚焦乡村民宿、古村漫游与在地生活体验的主题。',
-        activityKeywords: ['民宿', '乡村', '文旅', '摄影'],
-        products: ['民宿早餐券', '古村手绘地图', '乡居香氛', '伴手礼盒'],
+        title: '乡野栖居主题',
+        period: '民宿推荐',
+        description: '围绕民宿入住、周边漫游和轻松休闲展开的短途内容。',
+        activityKeywords: ['民宿', '采摘', '体验', '周末'],
+        products: ['民宿体验券', '伴手礼套装', '乡味点心', '度假礼包'],
       },
       {
         id: 'food',
-        title: '乡味寻鲜季',
-        period: '风味限定',
-        description: '围绕地方美食、手作体验和乡味采购的主题活动。',
-        activityKeywords: ['乡味', '手作', '文旅', '体验'],
-        products: ['地方小吃礼盒', '手工酱料', '风味挂面', '杂粮组合'],
+        title: '乡味美食主题',
+        period: '美食推荐',
+        description: '围绕地道风味、乡野小吃和特色餐饮展开的体验内容。',
+        activityKeywords: ['美食', '民俗', '体验', '周末'],
+        products: ['风味礼盒', '手作点心', '特色酱料', '乡味零食'],
       },
       {
         id: 'photo',
-        title: '田园影像节',
-        period: '摄影限定',
-        description: '适合周末打卡、花海拍摄和乡村慢游的主题内容。',
-        activityKeywords: ['摄影', '花海', '田园', '乡村'],
-        products: ['摄影明信片', '相框摆件', '风景拼图', '田园文创袋'],
+        title: '田园摄影主题',
+        period: '摄影推荐',
+        description: '适合拍照打卡、花田取景和乡野影像记录的出游内容。',
+        activityKeywords: ['摄影', '花海', '农场', '采摘'],
+        products: ['摄影套票', '设备租借', '风景明信片', '拍摄周边'],
       },
     ],
   },
@@ -167,33 +167,33 @@ const DEFAULT_THEME_GROUP = {
   themes: [
     {
       id: 'season',
-      title: '当季采摘季',
+      title: '当季主题推荐',
       period: '当季限定',
-      description: '围绕时令果蔬、田园采摘和亲子乡野出游的主题内容。',
-      activityKeywords: ['采摘', '亲子', '田园', '乡村'],
-      products: ['采摘鲜果', '手工果酱', '时令蔬菜盒', '田园点心'],
+      description: '围绕时令风景、农场体验和乡村休闲打造的综合主题内容。',
+      activityKeywords: ['花海', '采摘', '农场', '乡村'],
+      products: ['花海果礼', '时令鲜果', '手作点心', '农场礼盒'],
     },
     {
       id: 'craft',
-      title: '乡野手作周',
-      period: '体验限定',
-      description: '主打地方手作、非遗体验和乡味制作的主题。',
-      activityKeywords: ['非遗', '手作', '体验', '文旅'],
-      products: ['手作文创', '香囊', '风味酱料', '非遗礼盒'],
+      title: '乡野手作主题',
+      period: '体验推荐',
+      description: '适合参与手作课程、非遗体验和文化互动的轻量玩法。',
+      activityKeywords: ['非遗', '工艺', '体验', '文化'],
+      products: ['工艺手作', '香包礼盒', '文创材料包', '非遗礼盒'],
     },
     {
       id: 'slow',
-      title: '周末慢游节',
-      period: '周末限定',
-      description: '为近郊微度假、乡村漫游与轻康养人群准备的主题。',
-      activityKeywords: ['康养', '摄影', '文旅', '乡村'],
-      products: ['轻食礼盒', '香草茶', '乡居民宿券', '慢游地图'],
+      title: '周末慢游主题',
+      period: '周末精选',
+      description: '适合短途出行、轻松放空和慢节奏体验的周边农旅内容。',
+      activityKeywords: ['轻旅行', '摄影', '体验', '采摘'],
+      products: ['慢游礼盒', '香氛小物', '民宿代金券', '周边美食'],
     },
   ],
 }
 
 const THEME_CONTENT_OVERRIDES = {
-  '苦水玫瑰季': {
+  '玫瑰花海主题': {
     activitySeedKeys: [
       'lz-yongdeng-rose-weekend',
       'lz-kushui-rose-culture-day',
@@ -202,20 +202,20 @@ const THEME_CONTENT_OVERRIDES = {
     productCards: [
       {
         seedKey: 'lz-rose-jam',
-        title: '永登玫瑰酱礼装',
+        title: '永登玫瑰花酱礼盒',
         price: 56,
         sold: 93,
-        tags: ['玫瑰风味', '伴手礼'],
+        tags: ['玫瑰风味', '产地直发'],
       },
       {
-        title: '苦水玫瑰纯露礼盒',
+        title: '苦水玫瑰手作礼盒',
         price: 79,
         sold: 41,
-        tags: ['玫瑰手作', '节气礼盒'],
+        tags: ['玫瑰工艺', '花海伴手礼'],
       },
     ],
   },
-  '百合丰收季': {
+  '百合赏花主题': {
     activitySeedKeys: [
       'lz-bailihe-handmade-food-tour',
       'lz-xigu-baihe-culture-day',
@@ -223,20 +223,20 @@ const THEME_CONTENT_OVERRIDES = {
     productCards: [
       {
         seedKey: 'lz-baihe-gift-box',
-        title: '兰州百合伴手礼盒',
+        title: '兰州百合滋补礼盒',
         price: 88,
         sold: 126,
-        tags: ['百合特产', '节气礼盒'],
+        tags: ['百合特产', '花海伴手礼'],
       },
       {
-        title: '兰州鲜百合尝鲜装',
+        title: '兰州百合糕点组合',
         price: 49,
         sold: 58,
-        tags: ['时令鲜货', '食养'],
+        tags: ['花期限定', '轻食甜点'],
       },
     ],
   },
-  '黄河田园周末': {
+  '田园采摘研学': {
     activitySeedKeys: [
       'lz-yuzhong-strawberry-family-day',
       'lz-suburb-farm-study-camp',
@@ -245,16 +245,16 @@ const THEME_CONTENT_OVERRIDES = {
     ],
     productCards: [
       {
-        title: '榆中草莓鲜采礼盒',
+        title: '榆中草莓采摘礼盒',
         price: 69,
         sold: 84,
-        tags: ['田园鲜果', '周末带走'],
+        tags: ['田园鲜果', '周末推荐'],
       },
       {
-        title: '近郊手工果酱组合',
+        title: '农场手作果酱组合',
         price: 39,
         sold: 67,
-        tags: ['农旅手作', '轻食伴手'],
+        tags: ['研学手作', '农场体验'],
       },
     ],
   },
@@ -266,8 +266,8 @@ function normalizeText(value = '') {
 
 function trimRegionSuffix(name = '') {
   return normalizeText(name)
-    .replace(/(特别行政区|自治区|地区|盟)$/u, '')
-    .replace(/(省|市|区|县)$/u, '')
+    .replace(/(自治州|新区|矿区|林区|区|县)$/u, '')
+    .replace(/(省|市)$/u, '')
 }
 
 function getRegionDisplayText(source) {
@@ -324,9 +324,9 @@ function normalizeProduct(product = {}) {
     title: product.title || '未命名商品',
     cover: product.cover || SAFE_PRODUCT_COVER,
     price: Number(product.price) || 0,
-    priceText: product.price ? `¥${product.price}` : '主题精选',
+    priceText: product.price ? `￥${product.price}` : '主题推荐',
     sold: Number(product.sold) || 0,
-    soldText: product.sold ? `${product.sold}人已购` : '主题精选',
+    soldText: product.sold ? `已售 ${product.sold}` : '主题推荐',
     tags: [...categoryTags, ...tags].slice(0, 3),
   }
 }
@@ -348,8 +348,8 @@ function buildThemeProducts(productList, theme) {
         seedKey: (matchedProduct && matchedProduct.seedKey) || card.seedKey || '',
         title: (matchedProduct && matchedProduct.title) || card.title,
         cover: (matchedProduct && matchedProduct.cover) || card.cover || SAFE_PRODUCT_COVER,
-        priceText: matchedProduct ? matchedProduct.priceText : `¥${card.price}`,
-        soldText: matchedProduct ? matchedProduct.soldText : `${card.sold}人已购`,
+        priceText: matchedProduct ? matchedProduct.priceText : `￥${card.price}`,
+        soldText: matchedProduct ? matchedProduct.soldText : `已售 ${card.sold}`,
         tags: (matchedProduct && matchedProduct.tags && matchedProduct.tags.length)
           ? matchedProduct.tags
           : (card.tags || []),
@@ -363,8 +363,8 @@ function buildThemeProducts(productList, theme) {
     seedKey: '',
     title,
     cover: SAFE_PRODUCT_COVER,
-    priceText: '主题精选',
-    soldText: theme.period || '主题限定',
+    priceText: '待定',
+    soldText: theme.period || '主题推荐',
     tags: [theme.title],
   }))
 }
@@ -469,12 +469,12 @@ Page({
           return {
             id: item._id,
             seedKey: item.seedKey || '',
-            title: item.title || '未命名活动',
+            title: item.title || '精选活动',
             cover: await resolveActivityCover(item),
             dayText: coverTagInfo.durationTag,
             tags: coverTagInfo.tags,
-            priceText: item.priceFrom || item.price ? `¥${item.priceFrom || item.price}` : '主题精选',
-            soldText: item.traveledCount ? `${item.traveledCount}人已出行` : '主题精选',
+            priceText: item.priceFrom || item.price ? `￥${item.priceFrom || item.price}` : '待定',
+            soldText: item.traveledCount ? `${item.traveledCount}人已参与` : '主题推荐',
             rawTags: item.tags || [],
           }
         })
@@ -497,7 +497,7 @@ Page({
     } catch (err) {
       console.error('load activities failed', err)
       wx.showToast({
-        title: '加载失败',
+        title: '活动加载失败',
         icon: 'none',
       })
     }
@@ -523,7 +523,7 @@ Page({
       return '1天'
     }
     if (days === 0.5) {
-      return '0.5天'
+      return '半天'
     }
     return `${days}天`
   },
@@ -579,7 +579,7 @@ Page({
     const { type, id } = e.currentTarget.dataset
     if (!type || !id) {
       wx.showToast({
-        title: '广告信息不完整',
+        title: '内容正在准备中',
         icon: 'none',
       })
       return
@@ -616,7 +616,7 @@ Page({
     const id = e.currentTarget.dataset.id
     if (!id) {
       wx.showToast({
-        title: '商品详情正在整理中',
+        title: '商品详情暂未开放',
         icon: 'none',
       })
       return
@@ -635,7 +635,7 @@ Page({
 
   onScanTap() {
     wx.showToast({
-      title: '扫码/拍照购功能待完善',
+      title: '扫一扫/核销能力正在接入中',
       icon: 'none',
     })
   },

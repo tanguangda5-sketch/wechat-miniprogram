@@ -1,4 +1,4 @@
-﻿.container{
+.container{
   padding:30rpx;
   background:#f6faf4;
   min-height:100vh;

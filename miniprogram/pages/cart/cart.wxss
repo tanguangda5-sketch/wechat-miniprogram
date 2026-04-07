@@ -1,0 +1,204 @@
+.page {
+  min-height: 100vh;
+  background: #f6faf4;
+  padding: 20rpx 24rpx 180rpx;
+  box-sizing: border-box;
+}
+
+.emptyWrap {
+  min-height: 72vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.emptyTitle {
+  font-size: 38rpx;
+  font-weight: 700;
+  color: #233123;
+}
+
+.emptyDesc {
+  margin-top: 18rpx;
+  font-size: 26rpx;
+  color: #8b94a1;
+  line-height: 1.7;
+}
+
+.emptyBtn {
+  margin-top: 36rpx;
+  min-width: 240rpx;
+  height: 84rpx;
+  line-height: 84rpx;
+  border-radius: 999rpx;
+  background: #57984a;
+  color: #fff;
+  font-size: 28rpx;
+}
+
+.emptyBtn::after {
+  border: none;
+}
+
+.merchantCard {
+  margin-bottom: 20rpx;
+  padding: 24rpx;
+  border-radius: 24rpx;
+  background: #fff;
+  box-shadow: 0 12rpx 30rpx rgba(55, 42, 26, 0.06);
+}
+
+.merchantHead {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #1f2a1f;
+}
+
+.cartItem {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  margin-top: 24rpx;
+}
+
+.checkBox {
+  width: 34rpx;
+  height: 34rpx;
+  border: 2rpx solid #a2b49f;
+  border-radius: 50%;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.checkBox.checked {
+  background: #57984a;
+  border-color: #57984a;
+  box-shadow: inset 0 0 0 8rpx #fff;
+}
+
+.cover {
+  width: 152rpx;
+  height: 152rpx;
+  border-radius: 20rpx;
+  background: #eef5ea;
+  flex-shrink: 0;
+}
+
+.itemBody {
+  min-width: 0;
+  flex: 1;
+}
+
+.title {
+  font-size: 30rpx;
+  line-height: 1.5;
+  color: #1f2a1f;
+  font-weight: 700;
+}
+
+.metaRow,
+.footerRow {
+  margin-top: 12rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.unitPrice,
+.subtotal {
+  color: #57984a;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.stock {
+  font-size: 22rpx;
+  color: #6a8e63;
+}
+
+.stock.danger {
+  color: #c36d6d;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.stepBtn {
+  width: 56rpx;
+  height: 56rpx;
+  line-height: 56rpx;
+  padding: 0;
+  border-radius: 16rpx;
+  background: #edf5ea;
+  font-size: 30rpx;
+  color: #233123;
+}
+
+.stepBtn::after {
+  border: none;
+}
+
+.qty {
+  min-width: 36rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #1f2a1f;
+}
+
+.removeBtn {
+  align-self: flex-start;
+  font-size: 24rpx;
+  color: #99a598;
+}
+
+.bottomBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20rpx;
+  padding: 20rpx 24rpx calc(env(safe-area-inset-bottom) + 20rpx);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 -8rpx 26rpx rgba(55, 42, 26, 0.08);
+}
+
+.summaryLabel {
+  font-size: 22rpx;
+  color: #8b94a1;
+}
+
+.summaryValue {
+  margin-top: 8rpx;
+  font-size: 38rpx;
+  font-weight: 700;
+  color: #1f2a1f;
+}
+
+.checkoutBtn {
+  min-width: 240rpx;
+  height: 84rpx;
+  line-height: 84rpx;
+  border-radius: 999rpx;
+  background: #57984a;
+  color: #fff;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.checkoutBtn::after {
+  border: none;
+}
+
+.stepBtn[disabled],
+.checkoutBtn[disabled] {
+  opacity: 0.45;
+}

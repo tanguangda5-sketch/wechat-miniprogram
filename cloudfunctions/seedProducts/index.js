@@ -1,9 +1,11 @@
-const cloud = require("wx-server-sdk")
+const cloud = require('wx-server-sdk')
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 
-const CLOUD_PRODUCT_PREFIX = "cloud://cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845/products"
+const DEFAULT_PLATFORM_MERCHANT_OPENID = 'platform-self-operated'
+const DEFAULT_PLATFORM_MERCHANT_NAME = 'Platform Store'
+const CLOUD_PRODUCT_PREFIX = 'cloud://cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845/products'
 
 function buildProductAssets(seedKey) {
   return {
@@ -11,197 +13,164 @@ function buildProductAssets(seedKey) {
     banner: `${CLOUD_PRODUCT_PREFIX}/banners/${seedKey}.jpg`,
     gallery: [
       `${CLOUD_PRODUCT_PREFIX}/gallery/${seedKey}-1.jpg`,
-      `${CLOUD_PRODUCT_PREFIX}/gallery/${seedKey}-2.jpg`
-    ]
+      `${CLOUD_PRODUCT_PREFIX}/gallery/${seedKey}-2.jpg`,
+    ],
+  }
+}
+
+function toFen(amount) {
+  const value = Number(amount || 0)
+  return Number.isFinite(value) ? Math.round(value * 100) : 0
+}
+
+function buildCommerceFields(priceYuan, soldCount, shippingFeeYuan = 0, stock = 100) {
+  return {
+    merchantOpenid: DEFAULT_PLATFORM_MERCHANT_OPENID,
+    merchantName: DEFAULT_PLATFORM_MERCHANT_NAME,
+    price: toFen(priceYuan),
+    shippingFee: toFen(shippingFeeYuan),
+    stock,
+    lockedStock: 0,
+    soldCount,
+    status: priceYuan > 0 && stock > 0 ? 'on_sale' : 'draft',
   }
 }
 
 const products = [
   {
-    seedKey: "huangshan-free-range-eggs",
-    title: "黄山土鸡蛋",
-    summary: "源自安徽黄山山区散养土鸡，自然觅食、生态养殖，适合家庭日常营养与健康饮食。",
-    content: "黄山土鸡蛋来自山林散养环境，鸡群以谷物、虫草与山泉为主要食源，蛋黄饱满橙黄、蛋白浓稠Q弹、蛋香浓郁。适合作为家庭常备鲜食，也适合儿童辅食、孕产营养补充和银发养生场景。",
-    province: "安徽省",
-    city: "黄山市",
-    district: "",
-    locationName: "黄山生态散养农场",
-    tags: ["商品", "土鸡蛋", "生态养殖"],
-    categoryTags: ["健康食材", "日常鲜货"],
-    suitableGroups: ["宝宝辅食家庭", "孕产人群", "银发族", "健康饮食家庭"],
-    price: 0,
+    seedKey: 'huangshan-free-range-eggs',
+    title: 'Free-range eggs',
+    summary: 'Daily fresh eggs from mountain farms.',
+    content: 'Suitable for family breakfast and daily nutrition.',
+    province: 'Anhui',
+    city: 'Huangshan',
+    district: '',
+    locationName: 'Huangshan Farm',
+    tags: ['product', 'eggs', 'fresh'],
+    categoryTags: ['daily food', 'fresh'],
+    suitableGroups: ['family', 'senior', 'healthy diet'],
     sold: 0,
-    highlights: [
-      "山林散养，自然觅食",
-      "无激素、无抗生素",
-      "蛋黄橙黄饱满，蛋白浓稠",
-      "适合全家日常营养补充"
-    ],
-    cover: buildProductAssets("huangshan-free-range-eggs").cover,
-    gallery: buildProductAssets("huangshan-free-range-eggs").gallery,
-    banner: buildProductAssets("huangshan-free-range-eggs").banner,
-    sourceType: "real"
+    highlights: ['farm raised', 'fresh source', 'daily staple'],
+    sourceType: 'real',
+    ...buildProductAssets('huangshan-free-range-eggs'),
+    ...buildCommerceFields(0, 0, 0, 0),
   },
   {
-    seedKey: "lz-baihe-gift-box",
-    title: "兰州百合伴手礼盒",
-    summary: "适合送礼和节庆走亲访友的兰州特色礼盒。",
-    content: "精选兰州百合相关产品组合，适合作为乡味伴手礼与节气送礼选择。",
-    province: "甘肃省",
-    city: "兰州市",
-    district: "七里河区",
-    locationName: "兰州乡味精选馆",
-    tags: ["商品", "特产", "礼盒"],
-    categoryTags: ["乡味特产", "节气礼盒"],
-    suitableGroups: ["都市白领", "亲子家庭", "银发族"],
-    price: 88,
+    seedKey: 'lz-baihe-gift-box',
+    title: 'Lanzhou lily gift box',
+    summary: 'Gift box suitable for visiting family and friends.',
+    content: 'A local specialty combo for gifting and home use.',
+    province: 'Gansu',
+    city: 'Lanzhou',
+    district: 'Qilihe',
+    locationName: 'Lanzhou Specialty House',
+    tags: ['product', 'gift box', 'local'],
+    categoryTags: ['local food', 'gift box'],
+    suitableGroups: ['office worker', 'family'],
     sold: 126,
-    highlights: [
-      "兰州地方特色明显",
-      "适合送礼",
-      "包装友好"
-    ],
-    cover: buildProductAssets("lz-baihe-gift-box").cover,
-    gallery: buildProductAssets("lz-baihe-gift-box").gallery,
-    banner: buildProductAssets("lz-baihe-gift-box").banner
+    highlights: ['local specialty', 'gift friendly', 'ready to ship'],
+    sourceType: 'real',
+    ...buildProductAssets('lz-baihe-gift-box'),
+    ...buildCommerceFields(88, 126, 0, 160),
   },
   {
-    seedKey: "lz-rose-jam",
-    title: "永登玫瑰酱礼装",
-    summary: "带有甘肃玫瑰风味的手作伴手礼。",
-    content: "以永登玫瑰原料为灵感，适合喜欢清甜花香风味的用户。",
-    province: "甘肃省",
-    city: "兰州市",
-    district: "永登县",
-    locationName: "永登玫瑰工坊",
-    tags: ["商品", "手作", "伴手礼"],
-    categoryTags: ["手工工坊", "乡味特产"],
-    suitableGroups: ["都市白领", "青年社交游"],
-    price: 56,
+    seedKey: 'lz-rose-jam',
+    title: 'Rose flavor gift pack',
+    summary: 'A light snack gift pack with local rose flavor.',
+    content: 'Easy to carry and suitable as a small gift.',
+    province: 'Gansu',
+    city: 'Lanzhou',
+    district: 'Yongdeng',
+    locationName: 'Rose Workshop',
+    tags: ['product', 'rose', 'gift'],
+    categoryTags: ['handmade', 'local food'],
+    suitableGroups: ['young traveler', 'office worker'],
     sold: 93,
-    highlights: [
-      "适合女性用户送礼",
-      "花香风味鲜明",
-      "小规格便于携带"
-    ],
-    cover: buildProductAssets("lz-rose-jam").cover,
-    gallery: buildProductAssets("lz-rose-jam").gallery,
-    banner: buildProductAssets("lz-rose-jam").banner
+    highlights: ['easy carry', 'rose aroma', 'gift pack'],
+    sourceType: 'real',
+    ...buildProductAssets('lz-rose-jam'),
+    ...buildCommerceFields(56, 93, 0, 120),
   },
   {
-    seedKey: "linxia-handmade-noodle-gift",
-    title: "临夏手工面点组合",
-    summary: "临夏风味浓郁的地方面食组合装。",
-    content: "集合临夏风味面点与地方特色搭配，更适合作为家庭分享型商品。",
-    province: "甘肃省",
-    city: "临夏回族自治州",
-    district: "临夏市",
-    locationName: "临夏乡味馆",
-    tags: ["商品", "美食", "地方风味"],
-    categoryTags: ["乡村美食", "乡味特产"],
-    suitableGroups: ["亲子家庭", "银发族", "都市白领"],
-    price: 69,
+    seedKey: 'linxia-handmade-noodle-gift',
+    title: 'Handmade noodle combo',
+    summary: 'A local flavor combo for family sharing.',
+    content: 'Suitable for family dinner and local flavor tasting.',
+    province: 'Gansu',
+    city: 'Linxia',
+    district: 'Linxia City',
+    locationName: 'Linxia Food Hall',
+    tags: ['product', 'food', 'combo'],
+    categoryTags: ['local food', 'family share'],
+    suitableGroups: ['family', 'office worker'],
     sold: 148,
-    highlights: [
-      "地方风味明显",
-      "适合家庭分享",
-      "搭配方便"
-    ],
-    cover: buildProductAssets("linxia-handmade-noodle-gift").cover,
-    gallery: buildProductAssets("linxia-handmade-noodle-gift").gallery,
-    banner: buildProductAssets("linxia-handmade-noodle-gift").banner
+    highlights: ['local taste', 'shareable', 'easy cook'],
+    sourceType: 'real',
+    ...buildProductAssets('linxia-handmade-noodle-gift'),
+    ...buildCommerceFields(69, 148, 0, 140),
   },
   {
-    seedKey: "tianshui-apple-gift",
-    title: "天水苹果鲜果礼盒",
-    summary: "适合节气送礼和家庭囤货的鲜果礼盒。",
-    content: "以天水果香风味和品质果品为卖点，适合作为季节性伴手礼。",
-    province: "甘肃省",
-    city: "天水市",
-    district: "秦安县",
-    locationName: "秦安果品合作社",
-    tags: ["商品", "鲜果", "礼盒"],
-    categoryTags: ["乡味特产", "节气礼盒"],
-    suitableGroups: ["亲子家庭", "都市白领", "银发族"],
-    price: 99,
+    seedKey: 'tianshui-apple-gift',
+    title: 'Apple gift box',
+    summary: 'Seasonal fruit gift box for home and gifting.',
+    content: 'Suitable for seasonal fruit gifting and home stock-up.',
+    province: 'Gansu',
+    city: 'Tianshui',
+    district: 'QinAn',
+    locationName: 'Fruit Cooperative',
+    tags: ['product', 'fruit', 'gift box'],
+    categoryTags: ['fresh fruit', 'gift box'],
+    suitableGroups: ['family', 'office worker'],
     sold: 172,
-    highlights: [
-      "时令鲜果品质稳定",
-      "适合送礼",
-      "包装完整"
-    ],
-    cover: buildProductAssets("tianshui-apple-gift").cover,
-    gallery: buildProductAssets("tianshui-apple-gift").gallery,
-    banner: buildProductAssets("tianshui-apple-gift").banner
+    highlights: ['seasonal fruit', 'gift friendly', 'stable quality'],
+    sourceType: 'real',
+    ...buildProductAssets('tianshui-apple-gift'),
+    ...buildCommerceFields(99, 172, 0, 180),
   },
   {
-    seedKey: "gannan-yak-yogurt",
-    title: "甘南牦牛酸奶风味组",
-    summary: "高原牧场风味延伸出的特色乳品组合。",
-    content: "适合对甘南牧场风味感兴趣的用户，兼具地方特色与轻量尝鲜体验。",
-    province: "甘肃省",
-    city: "甘南藏族自治州",
-    district: "夏河县",
-    locationName: "甘南牧场风味站",
-    tags: ["商品", "牧场风味", "轻食"],
-    categoryTags: ["乡村美食", "地方风味"],
-    suitableGroups: ["青年社交游", "都市白领"],
-    price: 49,
-    sold: 81,
-    highlights: [
-      "高原风味鲜明",
-      "适合尝鲜",
-      "包装轻便"
-    ],
-    cover: buildProductAssets("gannan-yak-yogurt").cover,
-    gallery: buildProductAssets("gannan-yak-yogurt").gallery,
-    banner: buildProductAssets("gannan-yak-yogurt").banner
-  },
-  {
-    seedKey: "zhangye-coarse-grain-box",
-    title: "张掖杂粮健康礼盒",
-    summary: "兼顾送礼与日常囤货的乡味杂粮组合。",
-    content: "主打张掖产地杂粮和健康搭配，适合送给长辈或注重饮食均衡的人群。",
-    province: "甘肃省",
-    city: "张掖市",
-    district: "甘州区",
-    locationName: "张掖乡味商城",
-    tags: ["商品", "杂粮", "健康"],
-    categoryTags: ["乡味特产", "礼盒"],
-    suitableGroups: ["银发族", "亲子家庭", "都市白领"],
-    price: 79,
+    seedKey: 'zhangye-coarse-grain-box',
+    title: 'Coarse grain health box',
+    summary: 'A healthy combo for family daily meals.',
+    content: 'Suitable for healthy diet and family stock-up.',
+    province: 'Gansu',
+    city: 'Zhangye',
+    district: 'Ganzhou',
+    locationName: 'Zhangye Store',
+    tags: ['product', 'grain', 'health'],
+    categoryTags: ['local food', 'gift box'],
+    suitableGroups: ['family', 'senior'],
     sold: 137,
-    highlights: [
-      "健康取向明确",
-      "适合家庭囤货",
-      "送礼体面"
-    ],
-    cover: buildProductAssets("zhangye-coarse-grain-box").cover,
-    gallery: buildProductAssets("zhangye-coarse-grain-box").gallery,
-    banner: buildProductAssets("zhangye-coarse-grain-box").banner
-  }
+    highlights: ['healthy combo', 'family pack', 'gift friendly'],
+    sourceType: 'real',
+    ...buildProductAssets('zhangye-coarse-grain-box'),
+    ...buildCommerceFields(79, 137, 0, 150),
+  },
 ]
 
-async function upsertBySeedKey(collectionName, item) {
+async function upsertBySeedKey(collectionName, item, allowOverwrite = false) {
   const collection = db.collection(collectionName)
   const payload = {
     ...item,
-    updatedAt: db.serverDate()
+    updatedAt: db.serverDate(),
   }
 
   try {
     const exists = await collection.where({ seedKey: item.seedKey }).limit(1).get()
 
     if (exists.data.length) {
+      if (!allowOverwrite) {
+        return 'skipped'
+      }
+
       await collection.doc(exists.data[0]._id).update({ data: payload })
-      return "updated"
+      return 'updated'
     }
   } catch (error) {
-    const message = String((error && error.message) || "")
+    const message = String((error && error.message) || '')
     const isCollectionMissing =
-      message.includes("collection not exists") ||
-      message.includes("DATABASE_COLLECTION_NOT_EXIST") ||
-      message.includes("Db or Table not exist")
+      message.includes('collection not exists') ||
+      message.includes('DATABASE_COLLECTION_NOT_EXIST') ||
+      message.includes('Db or Table not exist')
 
     if (!isCollectionMissing) {
       throw error
@@ -211,22 +180,23 @@ async function upsertBySeedKey(collectionName, item) {
   await collection.add({
     data: {
       ...payload,
-      createdAt: db.serverDate()
-    }
+      createdAt: db.serverDate(),
+    },
   })
-  return "created"
+  return 'created'
 }
 
-exports.main = async () => {
-  const productStats = { created: 0, updated: 0 }
+exports.main = async (event = {}) => {
+  const productStats = { created: 0, updated: 0, skipped: 0 }
+  const allowOverwrite = !!event.allowOverwrite
 
   for (const item of products) {
-    const action = await upsertBySeedKey("products", item)
+    const action = await upsertBySeedKey('products', item, allowOverwrite)
     productStats[action] += 1
   }
 
   return {
     success: true,
-    products: productStats
+    products: productStats,
   }
 }

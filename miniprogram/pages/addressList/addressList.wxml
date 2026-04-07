@@ -1,0 +1,24 @@
+<view class="page">
+  <view wx:if="{{!list.length}}" class="emptyWrap">
+    <view class="emptyTitle">还没有收货地址</view>
+    <view class="emptyDesc">先新增一个地址，结算时就能直接选择。</view>
+  </view>
+
+  <view wx:for="{{list}}" wx:key="_id" class="addressCard" bindtap="chooseAddress" data-id="{{item._id}}">
+    <view class="headRow">
+      <view class="receiver">{{item.receiverName}}</view>
+      <view class="phone">{{item.receiverPhone}}</view>
+      <view wx:if="{{item.isDefault}}" class="defaultTag">默认</view>
+    </view>
+
+    <view class="addressText">{{item.province}}{{item.city}}{{item.district}}{{item.detailAddress}}</view>
+
+    <view class="actions" catchtap="noop">
+      <view class="action" data-id="{{item._id}}" bindtap="setDefault">设为默认</view>
+      <view class="action" data-id="{{item._id}}" bindtap="goEdit">编辑</view>
+      <view class="action danger" data-id="{{item._id}}" bindtap="removeAddress">删除</view>
+    </view>
+  </view>
+
+  <button class="addBtn" bindtap="goAdd">新增收货地址</button>
+</view>

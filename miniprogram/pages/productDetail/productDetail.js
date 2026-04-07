@@ -4,24 +4,32 @@ const {
   toggleFavorite,
   recordFootprint,
 } = require('../../utils/collectionStore')
+const {
+  formatCommerceMessage,
+  mapProductForDisplay,
+} = require('../../utils/commerce')
 
 Page({
   data: {
     id: '',
     detail: null,
     favorited: false,
+    quantity: 1,
     statusBarHeight: 20,
     favoriteIcon: '/images/icons/favorite-heart-outline.png',
     favoriteIconFilled: '/images/icons/favorite-heart-filled.png',
     text: {
       empty: '暂无商品数据',
       origin: '产地信息',
-      price: '参考价格',
-      sold: '已售数量',
+      price: '价格',
+      sold: '销量',
+      stock: '库存',
       highlights: '商品亮点',
       description: '商品介绍',
       gallery: '商品图集',
-      buyNow: '去看看',
+      quantity: '购买数量',
+      addCart: '加入购物车',
+      buyNow: '立即购买',
     },
   },
 
@@ -89,18 +97,17 @@ Page({
       .concat(Array.isArray(detail.categoryTags) ? detail.categoryTags : [])
       .concat(Array.isArray(detail.tags) ? detail.tags : [])
       .slice(0, 6)
-    const regionText = [detail.province, detail.city, detail.district].filter(Boolean).join(' · ')
-    const price = Number(detail.price || 0)
+    const regionText = [detail.province, detail.city, detail.district].filter(Boolean).join(' / ')
+    const normalized = mapProductForDisplay(detail)
 
     return {
       ...detail,
+      ...normalized,
       cover,
       gallery,
       tags,
       regionText,
       locationText: detail.locationName || regionText || '产地待补充',
-      priceText: price ? `¥${price}` : '价格待定',
-      soldText: detail.sold ? `${detail.sold}件已售` : '销量待补充',
       highlights: Array.isArray(detail.highlights) ? detail.highlights : [],
       descriptionText: detail.content || detail.summary || '',
     }
@@ -122,6 +129,60 @@ Page({
       priceText: detail.priceText,
       metaText: detail.soldText,
       badgeText: '商品',
+    }
+  },
+
+  changeQuantity(e) {
+    const delta = Number(e.currentTarget.dataset.delta || 0)
+    const detail = this.data.detail || {}
+    const current = Number(this.data.quantity || 1)
+    const max = Math.max(1, Number(detail.stock || 1))
+    const next = Math.min(max, Math.max(1, current + delta))
+    this.setData({ quantity: next })
+  },
+
+  async addToCart() {
+    const { detail, quantity } = this.data
+    if (!detail || !detail._id || !detail.isPurchasable) {
+      wx.showToast({
+        title: '当前商品暂不可下单',
+        icon: 'none',
+      })
+      return
+    }
+
+    wx.showLoading({ title: '加入中' })
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'productCart',
+        data: {
+          action: 'add',
+          productId: detail._id,
+          quantity,
+          selected: true,
+        },
+      })
+
+      if (!res.result || !res.result.success) {
+        wx.showToast({
+          title: formatCommerceMessage(res.result && res.result.message, '加入购物车失败'),
+          icon: 'none',
+        })
+        return
+      }
+
+      wx.showToast({
+        title: '已加入购物车',
+        icon: 'success',
+      })
+    } catch (error) {
+      console.error('[productDetail] add to cart failed', error)
+      wx.showToast({
+        title: '加入购物车失败',
+        icon: 'none',
+      })
+    } finally {
+      wx.hideLoading()
     }
   },
 
@@ -164,9 +225,23 @@ Page({
   },
 
   handleBuy() {
-    wx.showToast({
-      title: '商品详情已接通，购买功能稍后完善',
-      icon: 'none',
+    const { detail, quantity } = this.data
+    if (!detail || !detail._id || !detail.isPurchasable) {
+      wx.showToast({
+        title: '当前商品暂不可下单',
+        icon: 'none',
+      })
+      return
+    }
+
+    wx.navigateTo({
+      url: `/pages/confirmOrder/confirmOrder?source=buy_now&productId=${detail._id}&quantity=${quantity}`,
+    })
+  },
+
+  goCart() {
+    wx.switchTab({
+      url: '/pages/cart/cart',
     })
   },
 })

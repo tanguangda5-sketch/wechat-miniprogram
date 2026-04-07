@@ -161,6 +161,36 @@
   gap: 8rpx;
 }
 
+.productOrderEntry {
+  margin-top: 28rpx;
+  padding: 22rpx 20rpx;
+  border-radius: 18rpx;
+  background: #f6faf4;
+  border: 1rpx solid #e3ece0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.productOrderBody {
+  min-width: 0;
+  flex: 1;
+}
+
+.productOrderTitle {
+  font-size: 28rpx;
+  color: #1f2a1f;
+  font-weight: 600;
+}
+
+.productOrderDesc {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #8ea08b;
+  line-height: 1.5;
+}
+
 .orderItem {
   flex: 1;
   display: flex;

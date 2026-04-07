@@ -38,6 +38,8 @@
     "pages/activityOrderDetail/activityOrderDetail",
     "pages/activityReview/activityReview",
     "pages/myOrders/myOrders",
+    "pages/productOrderList/productOrderList",
+    "pages/productOrderDetail/productOrderDetail",
     "pages/reviewCenter/reviewCenter",
     "pages/favorites/favorites",
     "pages/favoritesEdit/favoritesEdit",
@@ -46,7 +48,10 @@
     "pages/knowledgeDetail/knowledgeDetail",
     "pages/hotel/hotel",
     "pages/mall/mall",
-    "pages/qaCenter/qaCenter"
+    "pages/qaCenter/qaCenter",
+    "pages/addressList/addressList",
+    "pages/addressEdit/addressEdit",
+    "pages/confirmOrder/confirmOrder"
   ],
   "permission": {
     "scope.userLocation": {

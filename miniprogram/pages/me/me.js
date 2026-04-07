@@ -184,6 +184,17 @@ Page({
     })
   },
 
+  goProductOrders() {
+    if (!this.data.loggedIn) {
+      this.goLogin()
+      return
+    }
+
+    wx.navigateTo({
+      url: '/pages/productOrderList/productOrderList?tab=all',
+    })
+  },
+
   goOrderTab(e) {
     const { tab } = e.currentTarget.dataset
     if (tab === 'pending') {

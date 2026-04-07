@@ -3,20 +3,28 @@
     <view class="searchBox">乡味商城</view>
   </view>
 
-  <view class="goodsList">
+  <view wx:if="{{goodsList.length}}" class="goodsList">
     <view
       wx:for="{{goodsList}}"
       wx:key="id"
-      class="goodsCard"
+      class="goodsCard {{item.isPurchasable ? '' : 'goodsCardDisabled'}}"
       data-id="{{item.id}}"
       bindtap="goProductDetail"
     >
-      <image class="goodsImg" src="{{item.cover}}" mode="aspectFill"></image>
+      <view class="goodsImgWrap">
+        <image class="goodsImg" src="{{item.cover}}" mode="aspectFill"></image>
+        <view class="statusTag {{item.statusClass}}">{{item.statusText}}</view>
+      </view>
       <text class="goodsName">{{item.title}}</text>
       <view class="goodsBottom">
         <text class="goodsPrice">{{item.priceText}}</text>
         <text class="goodsSold">{{item.soldText}}</text>
       </view>
     </view>
+  </view>
+
+  <view wx:else class="emptyWrap">
+    <view class="emptyTitle">&#x6682;&#x65F6;&#x8FD8;&#x6CA1;&#x6709;&#x5546;&#x54C1;</view>
+    <view class="emptyDesc">&#x53EF;&#x5148;&#x90E8;&#x7F72;&#x79CD;&#x5B50;&#x6570;&#x636E;&#x540E;&#x518D;&#x8FDB;&#x884C;&#x5546;&#x54C1;&#x95ED;&#x73AF;&#x6F14;&#x793A;&#x3002;</view>
   </view>
 </view>

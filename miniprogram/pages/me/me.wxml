@@ -56,6 +56,14 @@
         <text class="orderLabel">{{item.label}}</text>
       </view>
     </view>
+
+    <view class="productOrderEntry" bindtap="goProductOrders">
+      <view class="productOrderBody">
+        <view class="productOrderTitle">&#x5546;&#x54C1;&#x8BA2;&#x5355;</view>
+        <view class="productOrderDesc">&#x67E5;&#x770B;&#x5546;&#x54C1;&#x95ED;&#x73AF;&#x6F14;&#x793A;&#x8BA2;&#x5355;</view>
+      </view>
+      <text class="arrow">></text>
+    </view>
   </view>
 
   <view class="menu">

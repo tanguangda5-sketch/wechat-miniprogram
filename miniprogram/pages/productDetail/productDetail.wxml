@@ -45,6 +45,21 @@
       </view>
     </view>
 
+    <view class="section">
+      <view class="sectionTitle">{{text.quantity}}</view>
+      <view class="card quantityCard">
+        <view class="stockLine">
+          <text>{{text.stock}}</text>
+          <text class="stockText {{detail.isPurchasable ? '' : 'soldOut'}}">{{detail.stockText}}</text>
+        </view>
+        <view class="stepper">
+          <button class="stepBtn" bindtap="changeQuantity" data-delta="-1" disabled="{{quantity <= 1}}">-</button>
+          <view class="quantityValue">{{quantity}}</view>
+          <button class="stepBtn" bindtap="changeQuantity" data-delta="1" disabled="{{quantity >= detail.stock}}">+</button>
+        </view>
+      </view>
+    </view>
+
     <view class="section" wx:if="{{detail.highlights.length}}">
       <view class="sectionTitle">{{text.highlights}}</view>
       <view class="card">
@@ -85,8 +100,12 @@
       <view class="favoriteBtn" bindtap="toggleFavorite">
         <image class="favoriteIcon" src="{{favorited ? favoriteIconFilled : favoriteIcon}}" mode="aspectFit" />
       </view>
+      <view class="favoriteBtn" bindtap="goCart">
+        <image class="favoriteIcon" src="/images/icons/goods.png" mode="aspectFit" />
+      </view>
     </view>
-    <button class="buyBtn" bindtap="handleBuy">{{text.buyNow}}</button>
+    <button class="cartBtn" bindtap="addToCart" disabled="{{!detail.isPurchasable}}">{{text.addCart}}</button>
+    <button class="buyBtn" bindtap="handleBuy" disabled="{{!detail.isPurchasable}}">{{text.buyNow}}</button>
   </view>
 </view>
 
