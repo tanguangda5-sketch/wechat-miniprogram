@@ -384,8 +384,8 @@ function normalizeBuddyRecommendation(item = {}, taskState = {}) {
     playItems: buildBuddyPlayItems(item, summary),
     practicalInfo: buildBuddyPracticalInfo(item),
     matchScore,
-    matchScoreText: `${matchScore}%鍖归厤`,
-    actionText: "鍙戣捣鎼瓙鐢宠",
+    matchScoreText: `${matchScore}%契合度`,
+    actionText: "发送搭子申请",
     openingText: buildBuddyOpeningText(item, taskState),
     avatarText: buildBuddyAvatarText(title),
     avatarColor: buildBuddyAvatarColor(normalizeText(item.id || title))
