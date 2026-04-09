@@ -2,7 +2,8 @@
   <view class="loading-box" wx:if="{{loading}}">正在加载文章...</view>
 
   <block wx:elif="{{article}}">
-    <image class="detail-cover" src="{{article.cover}}" mode="aspectFill"></image>
+    <image wx:if="{{article.cover}}" class="detail-cover" src="{{article.cover}}" mode="aspectFill"></image>
+    <view wx:else class="detail-cover detail-cover-empty">封面待补图</view>
     <view class="detail-card">
       <view class="detail-title">{{article.title}}</view>
       <view class="meta-row">{{article.author}} · {{article.publishTime}}</view>
@@ -17,7 +18,7 @@
 
       <block wx:for="{{article.content}}" wx:key="index">
         <view wx:if="{{item.type === 'heading'}}" class="content-h2">{{item.text}}</view>
-        <image wx:elif="{{item.type === 'image'}}" class="content-image" src="{{item.src}}" mode="widthFix"></image>
+        <image wx:elif="{{item.type === 'image' && item.src}}" class="content-image" src="{{item.src}}" mode="widthFix"></image>
         <view wx:else class="content-p">{{item.text}}</view>
       </block>
 

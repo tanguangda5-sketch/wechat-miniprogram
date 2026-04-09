@@ -5,6 +5,9 @@ const db = cloud.database()
 
 const COLLECTION_NAME = 'knowledgeArticles'
 const MAX_LIMIT = 100
+const DEFAULT_CHANNEL = 'agri'
+const DEFAULT_CATEGORY_LABEL = '全部'
+const SUPPORTED_CHANNELS = new Set(['agri', 'culture', 'red'])
 const CLOUD_ENV_ID = 'cloud1-3ghmr5ki7b1172fe.636c-cloud1-3ghmr5ki7b1172fe-1403917845'
 const CLOUD_KNOWLEDGE_COVER_PREFIX = `cloud://${CLOUD_ENV_ID}/knowledge/covers`
 const KNOWLEDGE_COVER_FILE_MAP = {
@@ -85,7 +88,7 @@ function parseTime(value) {
 function buildListItem(doc = {}) {
   return {
     id: doc._id,
-    channel: normalizeText(doc.channel) || 'agri',
+    channel: normalizeText(doc.channel) || DEFAULT_CHANNEL,
     title: normalizeText(doc.title),
     publishTime: normalizeText(doc.publishTime),
     tags: normalizeArray(doc.tags).filter(Boolean),
@@ -119,7 +122,9 @@ function sortArticles(list = []) {
 }
 
 exports.main = async (event = {}) => {
-  const channel = normalizeText(event.channel) || 'agri'
+  const incomingChannel = normalizeText(event.channel)
+  const channel = SUPPORTED_CHANNELS.has(incomingChannel) ? incomingChannel : DEFAULT_CHANNEL
+
   const res = await db.collection(COLLECTION_NAME)
     .where({
       status: 'published',
@@ -129,7 +134,7 @@ exports.main = async (event = {}) => {
     .get()
 
   const list = sortArticles(res.data || [])
-  const categories = ['全部', ...new Set(
+  const categories = [DEFAULT_CATEGORY_LABEL, ...new Set(
     list.flatMap((item) => normalizeArray(item.tags).filter(Boolean))
   )]
 

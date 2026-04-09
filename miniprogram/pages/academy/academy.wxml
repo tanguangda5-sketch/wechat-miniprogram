@@ -9,14 +9,10 @@
     <view class="hero-bg hero-placeholder" wx:else></view>
     <view class="hero-mask"></view>
     <view class="hero-content">
-      <view class="hero-chip">{{activeTab === 'agri' ? '农事资讯' : '文旅资讯'}}</view>
-      <view class="hero-title">农旅宝典</view>
-      <view class="hero-subtitle">
-        {{activeTab === 'agri' ? '聚焦农业、乡村与实用内容' : '聚焦景点文化、民俗非遗与游玩知识'}}
-      </view>
-      <view class="hero-desc">
-        {{activeTab === 'agri' ? '内容来自云数据库，支持控制台持续维护' : '图片走云存储，文章内容可在云开发控制台直接更新'}}
-      </view>
+      <view class="hero-chip">{{heroChip}}</view>
+      <view class="hero-title">{{heroTitle}}</view>
+      <view class="hero-subtitle">{{heroSubtitle}}</view>
+      <view class="hero-desc">{{heroDesc}}</view>
     </view>
   </view>
 
@@ -24,6 +20,7 @@
     <view class="tab-row">
       <view class="tab {{activeTab === 'agri' ? 'active' : ''}}" data-tab="agri" bindtap="switchTab">农事宝典</view>
       <view class="tab {{activeTab === 'culture' ? 'active' : ''}}" data-tab="culture" bindtap="switchTab">文旅课堂</view>
+      <view class="tab {{activeTab === 'red' ? 'active' : ''}}" data-tab="red" bindtap="switchTab">红色文旅</view>
     </view>
 
     <scroll-view class="category-scroll" scroll-x enable-flex show-scrollbar="false">
@@ -42,8 +39,8 @@
 
     <view class="feed-head">
       <view>
-        <view class="feed-title">{{activeTab === 'agri' ? '今日农事' : '今日文旅'}}</view>
-        <view class="feed-subtitle">{{activeTab === 'agri' ? '农业、乡村、实用经验' : '文化、体验、游玩知识'}}</view>
+        <view class="feed-title">{{feedTitle}}</view>
+        <view class="feed-subtitle">{{feedSubtitle}}</view>
       </view>
       <view class="feed-count">{{filteredList.length}} 篇内容</view>
     </view>
@@ -82,8 +79,8 @@
     </block>
 
     <view class="empty-box" wx:else>
-      <view class="empty-title">当前分类还没有内容</view>
-      <view class="empty-text">你可以先在云开发控制台新增文章，再回来查看展示效果。</view>
+      <view class="empty-title">{{emptyTitle}}</view>
+      <view class="empty-text">{{emptyText}}</view>
     </view>
   </view>
 </view>

@@ -77,13 +77,14 @@
 }
 
 .tab {
-  min-width: 180rpx;
+  flex: 1;
+  min-width: 0;
   height: 76rpx;
-  padding: 0 24rpx;
+  padding: 0 12rpx;
   border-radius: 20rpx;
   background: #f1f2f3;
   color: #6b6f72;
-  font-size: 32rpx;
+  font-size: 28rpx;
   font-weight: 600;
   display: flex;
   align-items: center;

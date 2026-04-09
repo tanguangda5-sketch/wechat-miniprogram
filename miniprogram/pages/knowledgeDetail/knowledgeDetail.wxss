@@ -18,6 +18,14 @@
   background: #e9edf1;
 }
 
+.detail-cover-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9c9184;
+  font-size: 30rpx;
+}
+
 .detail-card {
   margin: -34rpx 24rpx 0;
   background: #fff;
