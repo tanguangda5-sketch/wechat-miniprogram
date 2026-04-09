@@ -73,21 +73,26 @@
 
 .tab-row {
   display: flex;
-  gap: 18rpx;
+  gap: 12rpx;
+  padding: 8rpx;
+  border-radius: 30rpx;
+  background: #f3f5ef;
 }
 
 .tab {
-  min-width: 180rpx;
-  height: 76rpx;
-  padding: 0 24rpx;
-  border-radius: 20rpx;
-  background: #f1f2f3;
+  flex: 1;
+  min-width: 0;
+  height: 68rpx;
+  padding: 0 14rpx;
+  border-radius: 24rpx;
+  background: transparent;
   color: #6b6f72;
-  font-size: 32rpx;
+  font-size: 28rpx;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
 }
 
 .tab.active {
